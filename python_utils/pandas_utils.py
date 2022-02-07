@@ -2,9 +2,8 @@ from datetime import date, datetime
 from typing import List, Dict, Union, Literal
 
 import pandas as pd
-from pandas import DataFrame
 
-from helper_module.time import get_date, last_day_of_month
+from python_utils.time import get_date, last_day_of_month
 
 
 def unique_not_null_values(df: pd.DataFrame, column: str) -> List:
@@ -26,7 +25,7 @@ def unique_not_null_values(df: pd.DataFrame, column: str) -> List:
     return df[df[column].notnull()][column].unique().tolist()
 
 
-def rename_and_replace_column_information(df: DataFrame, data: Dict) -> DataFrame:
+def rename_and_replace_column_information(df: pd.DataFrame, data: Dict) -> pd.DataFrame:
     """
     We use this mostly when we serialize the data from postgres.
     It replaces the column values with a dictionary and also renames the column names.

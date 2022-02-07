@@ -1,7 +1,5 @@
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 from decimal import Decimal
-
-import pytz
 
 from tests.utils import TestCase, Dummy
 
@@ -9,14 +7,14 @@ GET_DIFFERENCES_TEST_CASES = [
     TestCase(
         description='Case 0: Complete different new data, type(old_data)==dict, skip_keys=None',
         input={
-            'old_data': Dummy(ref_datetime=datetime(2021, 1, 1, 0, 0, tzinfo=pytz.UTC)).get_dict_repr(),
+            'old_data': Dummy(ref_datetime=datetime(2021, 1, 1, 0, 0, tzinfo=timezone.utc)).get_dict_repr(),
             'new_data': {
                 'text': 'new_dummy',
                 'i_number': 20,
                 'f_number': 20.0,
                 'd_number': Decimal('20.0'),
                 'ref_date': date(2022, 1, 1),
-                'ref_datetime': datetime(2022, 1, 1, 0, 0, tzinfo=pytz.UTC),
+                'ref_datetime': datetime(2022, 1, 1, 0, 0, tzinfo=timezone.utc),
                 'bool_type': False
             }
         },
@@ -26,7 +24,7 @@ GET_DIFFERENCES_TEST_CASES = [
             'f_number': 20.0,
             'd_number': Decimal('20.0'),
             'ref_date': date(2022, 1, 1),
-            'ref_datetime': datetime(2022, 1, 1, 0, 0, tzinfo=pytz.UTC),
+            'ref_datetime': datetime(2022, 1, 1, 0, 0, tzinfo=timezone.utc),
             'bool_type': False
         }
     ),
@@ -64,7 +62,7 @@ GET_DIFFERENCES_TEST_CASES = [
             'f_number': 20.0,
             'd_number': Decimal('20.0'),
             'ref_date': date(2022, 1, 1),
-            'ref_datetime': datetime(2022, 1, 1, 13, 40, tzinfo=pytz.UTC),
+            'ref_datetime': datetime(2022, 1, 1, 13, 40, tzinfo=timezone.utc),
             'bool_type': False
         },
     ),

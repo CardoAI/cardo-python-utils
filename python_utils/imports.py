@@ -1,8 +1,7 @@
 from importlib import import_module
 
 
-# todo-remove pragma once used
-def import_optional_dependency(module_to_import: str, dependency: str):  # pragma no cover
+def import_optional_dependency(module_to_import: str, dependency: str = None):
     """
     Attempt to import a module from an external dependency.
     Raise an error if that dependency is not installed.
@@ -11,8 +10,14 @@ def import_optional_dependency(module_to_import: str, dependency: str):  # pragm
         dependency: Information about the dependency required
     Raises:
         ModuleNotFoundError: If the dependency is not installed
+    Examples:
+        >>> math = import_optional_dependency('math')
+        >>> pyyaml = import_optional_dependency("pyyaml")
+        Traceback (most recent call last):
+        ...
+        ModuleNotFoundError: pyyaml is required to use this function.
     """
     try:
         return import_module(module_to_import)
     except ModuleNotFoundError:
-        raise ModuleNotFoundError(f"{dependency} is required to use this function.")
+        raise ModuleNotFoundError(f"{dependency or module_to_import} is required to use this function.")

@@ -1,6 +1,6 @@
 import pytest
 
-from helper_module.finder import Finder
+from python_utils.data_structures import Finder
 from tests.tests_finder.tests_data import FIND_TEST_CASES, FILTER_TEST_CASES
 
 

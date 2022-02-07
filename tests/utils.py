@@ -50,18 +50,6 @@ class Dummy:
         return f'{self.text}'
 
 
-class FakeResponse(object):
-    """
-    FakeResponse class to be used by tests that need to mock a request or response
-    Has some of the most used attributes. Can add more if needed.
-    """
-
-    def __init__(self, status_code=200, content='Some content', data=None):
-        self.status_code = status_code
-        self.content = content
-        self.data = data if data else {}
-
-
 class TestCase(NamedTuple):
     input: Any
     output: Any

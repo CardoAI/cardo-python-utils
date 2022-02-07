@@ -35,21 +35,3 @@ def add_params_to_url(url: str, **kwargs) -> str:
         'https://test.com?p1=20&p2=30&p3=None&p4=test&p5=%3Chtml%2F%3E'
     """
     return url if not kwargs else f"{url}?{urlencode(kwargs)}"
-
-
-def get_remote_file_as_namedtempfile(file_url: str, extension: str = None):
-    """
-    Reads a remote file from the url. Creates a temporary file, available to be used
-    for libraries / functionalities that are unable to process remote files
-
-    Args:
-        file_url: string url to get the file from
-        extension: string to be added to the end of the file created
-    Returns:
-        NamedTemporaryFile with the contents of the file from url
-    """
-    import tempfile, requests
-    namedtempfile = tempfile.NamedTemporaryFile()
-    namedtempfile.name = f'{namedtempfile.name}{extension}'
-    namedtempfile.write(requests.get(file_url).content)
-    return namedtempfile

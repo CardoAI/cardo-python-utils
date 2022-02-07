@@ -22,7 +22,7 @@ Quick start
 -----------
 1. Import wanted function like this::
 
-    from helper_module.time import date_range
+    from python_utils.time import date_range
     date_range(start_date, end_date)
 
 Tests

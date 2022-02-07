@@ -1,11 +1,10 @@
 import logging
 import sys
 import time
-from typing import Dict, Union, Optional, IO
+from typing import Dict, Union, Optional, IO, TypeVar
 from typing import List, Any
 from typing import Tuple
 
-import model_utils
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.serializers.json import DjangoJSONEncoder
@@ -15,10 +14,11 @@ from django.db.models import Sum, Min, Avg, Max, Subquery, Case, When, Expressio
 from django.db.models.fields.files import FieldFile
 from django.forms import model_to_dict
 from django.utils import timezone
-from model_utils import Choices
 
-from helper_module.db import fetch_all
-from helper_module.types_hinting import Model_T
+from python_utils.imports import import_optional_dependency
+from python_utils.db import fetch_all
+
+Model_T = TypeVar('Model_T', bound=Model)
 
 
 class ExtendedEncoder(DjangoJSONEncoder):  # pragma no cover
@@ -62,17 +62,20 @@ def record_to_dict(record: Model, exclude: List = None) -> Dict:
     return initial_data
 
 
-def get_choices_list_and_dict(choices: Choices) -> Tuple[List, Dict]:
+def get_choices_list_and_dict(choices) -> Tuple[List, Dict]:
     """
-    From a Choices object return a list and dict of these choices:
+    From a Choices object return a list and dict of these choices.
     Args:
-        choices: Choices objt to get the represantations from
+        choices: Choices object to get the representations from
     Returns:
         tuple of list with human_value and dict-> {human_value: value}
     Examples:
+        >>> from model_utils import Choices
         >>> get_choices_list_and_dict(Choices((1, 'hello', 'HELLO')))
         ([('HELLO', 'HELLO')], {'HELLO': 1})
     """
+    import_optional_dependency('model_utils', dependency='django-model-utils')
+
     choices_list = [(human_value, human_value) for _, human_value in choices]
     choices_dict = {human_value: value for value, human_value in choices}
     return choices_list, choices_dict
@@ -231,16 +234,18 @@ def update_record(record: Model_T, save=True, **data) -> Model_T:
     return record
 
 
-def get_choice_value(choices: model_utils.Choices, human_string: str) -> Optional[Union[int, str]]:
+def get_choice_value(choices, human_string: str) -> Optional[Union[int, str]]:
     """
     Get database representation of a choice for a human-readable value
 
     Args:
-        choices: model_utils choice obj to get the db value from
+        choices: model_utils Choice object to get the db value from
         human_string: string representing the human-readable value
     Returns:
         db representation of choice field
     """
+
+    import_optional_dependency('model_utils', dependency='django-model-utils')
 
     for value, representation in choices:
         if representation == human_string:

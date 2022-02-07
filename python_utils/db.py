@@ -4,7 +4,7 @@ from typing import List, Dict
 
 def fetch_all(cursor: Cursor) -> List[Dict]:
     """
-    Returns all rows from a cursor as a list of dictionaries
+    Returns all rows from a cursor as a list of dictionaries.
 
     Args:
         cursor: Cursor object storing the data to be fetched

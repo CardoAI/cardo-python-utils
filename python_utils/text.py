@@ -3,7 +3,7 @@ import re
 from decimal import Decimal
 from typing import Optional, List, Any
 
-from helper_module.types_hinting import NumberIFD
+from python_utils.types_hinting import NumberIFD
 
 
 def format_percent(value: Optional[NumberIFD]):

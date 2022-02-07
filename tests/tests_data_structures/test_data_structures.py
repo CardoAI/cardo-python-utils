@@ -1,6 +1,6 @@
 import pytest
 
-from helper_module.data_structures import get_differences
+from python_utils.data_structures import get_differences
 from tests.tests_data_structures.tests_data import GET_DIFFERENCES_TEST_CASES
 
 
