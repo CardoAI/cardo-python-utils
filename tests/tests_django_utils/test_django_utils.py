@@ -84,7 +84,7 @@ def test_get_id_field_map(test_data, initial_invoices):
 
 @pytest.mark.parametrize('test_data', CALL_PROCEDURE_TEST_CASES)
 def test_call_procedure(test_data):
-    with patch('helper_module.django_utils.perform_query') as mocked:
+    with patch('helper_module.django.perform_query') as mocked:
         call_procedure(**test_data.input)
         mocked.assert_called_with(**test_data.output)
 
