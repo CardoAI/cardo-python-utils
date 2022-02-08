@@ -70,7 +70,7 @@ def get_dates_between(
         start_date: Union[date, datetime, str],
         end_date: Union[date, datetime, str],
         inclusive: Literal["both", "neither", "left", "right"] = "both"
-) -> list[date]:
+) -> List[date]:
     """
     1. Give start and end dates.
     2. Set inclusive if you want, by default the value is both
