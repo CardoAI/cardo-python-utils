@@ -98,7 +98,7 @@ def date_range(start_date: date, end_date: date) -> Generator[date, None, None]:
 
 def last_day_of_month(month: int, year: int) -> date:
     """
-    Take the month and year and return a datetime object representing
+    Take the month and year and return a date representing
     the last day of the given month. Supports leap years.
     Args:
         year: Int representing the year

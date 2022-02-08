@@ -32,15 +32,15 @@ class ExtendedEncoder(DjangoJSONEncoder):  # pragma no cover
         return super().default(o)
 
 
-def record_to_dict(record: Model, exclude: List = None) -> Dict:
+def record_to_dict(record: Model_T, exclude: List = None) -> Dict:
     """
     Transform a django record to a dict.
 
     Args:
-        record: to be transformed to dict
+        record: django object to be transformed to dict
         exclude: list of keys/fields to exclude in the final dict
     Returns:
-        dict with model filed:value pair
+        dict with model's field:value pairs
     """
 
     if exclude is None:
@@ -216,7 +216,7 @@ def compute_grouped_weighted_average_subquery(
 
 def update_record(record: Model_T, save=True, **data) -> Model_T:
     """
-    Update a record (as lazy model) and return it.
+    Update a record with given attributes and return it.
     If save=True also commit to the database the record with the changes
 
     Args:
@@ -255,7 +255,7 @@ def get_choice_value(choices, human_string: str) -> Optional[Union[int, str]]:
 
 def get_or_none(records: models.QuerySet, *args, **kwargs) -> Optional[Model_T]:
     """
-    Return object or None if not found.
+    Wrapper around queryset.get to return None if no record is found
 
     Args:
         records: queryset of objects to get() from
@@ -272,7 +272,7 @@ def get_or_none(records: models.QuerySet, *args, **kwargs) -> Optional[Model_T]:
 
 def ids(queryset: models.QuerySet, attr='id') -> List[Any]:
     """
-    Given a queryset and an attr we get all distinct values as a list
+    Given a queryset and an attr, get all distinct values of the attr as a list
 
     Args:
         queryset: queryset with the objects we want to get the data from
@@ -425,8 +425,8 @@ def safe_bulk_create(
     refresh fields (foreign keys) if any.
 
     Args:
-        model: Model.__class__ obj
-        records: list of records to be created
+        model: The Model to which the records belong
+        records: list of objects to be commited to the database
         refresh_fields: list with foreign keys to be updated
         batch_size: how many records we want to insert with a single query
     """
@@ -490,10 +490,11 @@ logger = logging.getLogger(__name__)
 
 def call_procedure(procedure_name: str, params: List[Any] = None):
     """
-    Executes a procedure in the db
+    Execute an SQL procedure in the db.
+
     Args:
         procedure_name: the name of the procedure to be executed
-        params: list of the parameters (maybe needs to be deleted)
+        params: list of the parameters to pass to the procedure
     """
     temp_time = time.time()
     logger.info(f"Started Procedure {procedure_name}")

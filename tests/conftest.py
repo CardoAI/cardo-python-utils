@@ -3,8 +3,6 @@ from decimal import Decimal
 
 import pytest
 
-
-
 # DJANGO UTILS FIXTURES
 from tests.testapp.models import Invoice, Company
 from tests.utils import Dummy

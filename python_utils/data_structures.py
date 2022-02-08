@@ -11,17 +11,19 @@ from python_utils.types_hinting import DictOrObject
 
 def safe_find(records: Iterable, filter_func: Callable) -> Optional[Any]:
     """
-    Given a list of dict and a filter function find the first occurrence and return it or None
-    if nothing found
+    Wrapper around the filter function, to return only the first record when
+    there is a match, or None instead.
 
     Args:
-        filter_func: function that the filter is going to excecuate over the list
-        records: list of dict to iterate over
+        records: List to iterate over
+        filter_func: Function that will be appliead on each record
     Returns:
-        first occurrence found or None
+        First occurrence found or None
     Examples:
         >>> safe_find([{'a': 'T', 'b': 'H'}, {'a': 'F'}], lambda rec: rec.get('a') == 'F')
         {'a': 'F'}
+        >>> safe_find([1, 2, 3], lambda rec: rec > 0)
+        1
         >>> safe_find([{'a': 'T'}], lambda rec: rec.get('a') == 'F') is None
         True
     """
@@ -33,11 +35,11 @@ def safe_find(records: Iterable, filter_func: Callable) -> Optional[Any]:
 
 def find_by(records: List[Dict], attr: Hashable, value: Any) -> Optional[Dict]:
     """
-    Given a list of dict and an attribute, value, return the first occurrence
+    Given a list of dicts and an attribute, value, return the first occurrence
     where dict[attr] == value or None if no occurrence accomplishes the condition
 
     Args:
-        records: list of dict obj to iterate over
+        records: list of dicts to iterate over
         attr: the attr we're trying to check for
         value: value to make the check against
     Returns:
@@ -53,7 +55,7 @@ def find_by(records: List[Dict], attr: Hashable, value: Any) -> Optional[Dict]:
 
 def filter_dicts(records: List[Dict], as_list=True, **filters) -> Union[List[Dict], Iterable[Dict]]:
     """
-    Pass a list of dict and filters as kwargs to get all filtered records as list or filter obj
+    Pass a list of dicts and filters as kwargs to get all filtered records as list or generator
 
     Args:
         records: list of dicts to iterate and filter from
@@ -151,14 +153,11 @@ def find_object(objects: List[object], **filters) -> Optional[object]:
 
 def exclude_keys(dictionary: Dict, keys: List[Hashable]) -> Dict:
     """
-    Iterate over a dict and check if key in exclude keys list. If yes, do not append the key:value
-    pair in the new dict which is going to be returned.
+    Create a new dictionary, excluding the keys given.
 
     Args:
-        dictionary: dict holding the items we are going to iterate
-        keys: list of dict keys which we don't want to include in the new dict
-    Returns:
-        New dict without the key:value pairs where keys in passed list of keys
+        dictionary: Source dict
+        keys: list of keys which we don't want to include in the new dict
     Examples:
         >>> exclude_keys({'a': 1, 'b': 2}, keys=['a'])
         {'b': 2}
@@ -168,14 +167,11 @@ def exclude_keys(dictionary: Dict, keys: List[Hashable]) -> Dict:
 
 def keep_keys(dictionary: Dict, keys: List[Hashable]) -> Dict:
     """
-    Iterate over a dict and check if key in include keys list. If yes, append the key:value
-    pair in the new dict which is going to be returned.
+    Create a new dictionary, keeping only the given keys.
 
     Args:
-        dictionary: dict holding the items we are going to iterate
+        dictionary: Source dict
         keys: list of dict keys which we want to include in the new dict
-    Returns:
-        New dict with the key:value pairs where keys in passed list of keys
     Examples:
         >>> keep_keys({'a': 1, 'b': 2}, keys=['a'])
         {'a': 1}
@@ -185,12 +181,10 @@ def keep_keys(dictionary: Dict, keys: List[Hashable]) -> Dict:
 
 def exclude_none_values(dictionary: Dict) -> Dict:
     """
-    Iterate over a dict and check if value is not None append key:value pair in new dict.
+    Create a new dictionary, removing the keys whose value is None.
 
     Args:
-        dictionary: dict holding the items we are going to iterate
-    Returns:
-         New dict with the key:value pairs where values are not None
+        dictionary: Source dict
     Examples:
         >>> exclude_none_values({'a': None, 'b': 1})
         {'b': 1}
@@ -234,7 +228,7 @@ def get_differences(
     Args:
         old_data: Object or dictionary containing the old version of the data
         new_data: Dictionary containing the new version of the data
-        skip_keys: Option list of keys to skip during comparison
+        skip_keys: Optional list of keys to skip during comparison
         number_precision: Precision used for number comparisons
     Returns:
         Dict containing the keys that have changed with the new respective values
@@ -302,39 +296,44 @@ def have_equal_values(dict1: Dict, dict2: Dict, attributes: List = None) -> bool
     return True
 
 
-def get_nested(dictionary: Union[Dict, Any], *attrs: Hashable) -> Optional[Any]:
+def get_nested(dictionary: Dict, *attrs: Hashable) -> Optional[Any]:
     """
-    Access a nested dict by passing all the keys we want to access.
+    Access a nested value in a dict by passing the keys of all the levels.
 
     Args:
         dictionary: Dict object we want to access
         *attrs: Keys we want to access
     Returns:
         The value we want to get or None if it can't be found
+    Raises:
+        AttributeError: When the original object or a nested one is not a dict
     Examples:
         >>> get_nested({'a': {'b': {'c': 'Value'}}}, 'a', 'b', 'c')
         'Value'
-        >>> get_nested({})
-        {}
+        >>> get_nested({}, 'a') is None
+        True
+        >>> get_nested({'a': 'b'}, 'c') is None
+        True
         >>> get_nested({'a': {'b': {'c': 'Value'}}}, 'a', 'd', 'c') is None
         True
-        >>> get_nested(1, 'a') is None
+        >>> get_nested(1, 'a') is None  # type: ignore
         True
     """
-    if not isinstance(dictionary, dict):
+    if not dictionary or not attrs:
         return None
 
     current_value = dictionary
     for attr in attrs:
-        current_value = current_value.get(attr)
-        if not isinstance(current_value, dict):
-            return current_value
+        try:
+            current_value = current_value.get(attr)
+        except AttributeError:
+            return None
     return current_value
 
 
 def lists_intersection(list1: List, list2: List) -> List:
     """
-    Find the intersection between 2 lists
+    Find the common elements between 2 lists.
 
     Args:
         list1: list to look for intersection
@@ -391,9 +390,10 @@ def ints(values: List[str]) -> List[int]:
 
 def any_not_none(iterable: Iterable) -> bool:
     """
+    Verify if any of the elements of the iterable is not None.
     The default behaviour of the builtin any function checks the value
-    with `if element` and this is causing the values like zero (0) to be
-    considered as Falsy values. This function aims to change this behaviour
+    with `if element` and causes the values like zero (0) to be
+    treated as Falsy values. This function aims to change this behaviour
     to return False only when all the values are None.
 
     Args:
