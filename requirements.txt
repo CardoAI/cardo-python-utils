@@ -1,4 +1,4 @@
-Django==4.0.2
-django-model-utils==4.2.0
-djangorestframework==3.13.1
+Django
+django-model-utils
+djangorestframework
 pandas==1.4.0
