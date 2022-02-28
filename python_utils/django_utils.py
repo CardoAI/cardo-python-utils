@@ -15,10 +15,12 @@ from django.db.models.fields.files import FieldFile
 from django.forms import model_to_dict
 from django.utils import timezone
 
-from python_utils.imports import import_optional_dependency
 from python_utils.db import fetch_all
+from python_utils.imports import import_optional_dependency
 
 Model_T = TypeVar('Model_T', bound=Model)
+
+logger = logging.getLogger(__name__)
 
 
 class ExtendedEncoder(DjangoJSONEncoder):  # pragma no cover
@@ -441,7 +443,7 @@ def safe_bulk_create(
                 except AttributeError:
                     continue
 
-    model.objects.bulk_create(records, batch_size=batch_size)
+    return model.objects.bulk_create(records, batch_size=batch_size)
 
 
 def safe_bulk_update(
@@ -482,10 +484,8 @@ def safe_bulk_update(
         timestamp = timezone.now()
         for record in records:
             setattr(record, updated_at_field, timestamp)
-    model.objects.bulk_update(records, fields, batch_size=batch_size)
 
-
-logger = logging.getLogger(__name__)
+    return model.objects.bulk_update(records, fields, batch_size=batch_size)
 
 
 def call_procedure(procedure_name: str, params: List[Any] = None):
