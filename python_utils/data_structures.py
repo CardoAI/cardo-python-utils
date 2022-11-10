@@ -6,7 +6,7 @@ from typing import (
 )
 
 from python_utils.math import are_equal
-from python_utils.types_hinting import DictOrObject
+from python_utils.types_hinting import T
 
 
 def safe_find(records: Iterable, filter_func: Callable) -> Optional[Any]:
@@ -85,7 +85,7 @@ def filter_dicts(records: List[Dict], as_list=True, **filters) -> Union[List[Dic
     return filtered_records
 
 
-def filter_objects(objects: List[object], as_list=True, **filters) -> Union[List[object], Iterable[Dict]]:
+def filter_objects(objects: List[T], as_list=True, **filters) -> Union[List[T], Iterable[Dict]]:
     """
     Pass a list of objects and filters as kwargs to get all filtered records as list or filter obj
 
@@ -122,7 +122,7 @@ def filter_objects(objects: List[object], as_list=True, **filters) -> Union[List
     return filtered_objects
 
 
-def find_object(objects: List[object], **filters) -> Optional[object]:
+def find_object(objects: List[T], **filters) -> Optional[T]:
     """
     Pass a list of objects and filters as kwargs to get first occurence record. If no filters
     passed return first object in the list
@@ -217,7 +217,7 @@ def get_values(dictionary: Dict, keys: List[Hashable], dtypes: Dict = None) -> D
 
 
 def get_differences(
-        old_data: DictOrObject,
+        old_data: Union[Dict, T],
         new_data: Dict,
         skip_keys: List[Hashable] = None,
         number_precision: int = 6
@@ -438,7 +438,7 @@ class Finder:
     }
     available_ops = ops.keys()
 
-    def __init__(self, records: List[DictOrObject]):
+    def __init__(self, records: List[Union[Dict, T]]):
         self._records = records
 
     @classmethod
@@ -449,7 +449,7 @@ class Finder:
         return cls.ops[op](value1, value2)
 
     @classmethod
-    def _verify(cls, record: DictOrObject, ignore_types=False, **checks) -> bool:
+    def _verify(cls, record: Union[Dict, T], ignore_types=False, **checks) -> bool:
         """
         Verify that the record fulfills the given checks.
 
@@ -480,7 +480,7 @@ class Finder:
         return True
 
     @staticmethod
-    def _get_value(record: DictOrObject, attr: str) -> Optional[Any]:
+    def _get_value(record: Union[Dict, T], attr: str) -> Optional[Any]:
         """
         Get the value of the attribute for the given record. Used to process dicts and objects uniformly.
 

@@ -1,7 +1,6 @@
 from decimal import Decimal
-from typing import Dict, Union
+from typing import Union, TypeVar
 
-
-DictOrObject = Union[Dict, object]
+T = TypeVar('T')
 
 NumberIFD = Union[int, float, Decimal]
