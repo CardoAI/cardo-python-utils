@@ -85,7 +85,7 @@ def filter_dicts(records: List[Dict], as_list=True, **filters) -> Union[List[Dic
     return filtered_records
 
 
-def filter_objects(objects: List[T], as_list=True, **filters) -> Union[List[T], Iterable[Dict]]:
+def filter_objects(objects: List[T], as_list=True, **filters) -> Union[List[T], Iterable[T]]:
     """
     Pass a list of objects and filters as kwargs to get all filtered records as list or filter obj
 
