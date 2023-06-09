@@ -39,7 +39,7 @@ class FinancialCreditAssetFinancingPurposeChoices(ChoiceEnum):
 
 class InterestRateTypeChoices(ChoiceEnum):
     FLIF = 1, "Floating rate underlying exposure (for life)"
-    FINX = 2, "Floating rate underlying exposure linked to one index that will revert to another index in the future",
+    FINX = 2, "Floating rate underlying exposure linked to one index that will revert to another index in the future"
     FXRL = 3, "Fixed rate underlying exposure (for life)"
     FXPR = 4, "Fixed with future periodic resets"
     FLCF = 5, "Fixed rate underlying exposure with compulsory future switch to floating"
