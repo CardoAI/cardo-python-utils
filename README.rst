@@ -15,6 +15,7 @@ Main utils:
 * math
 * pandas
 * exception
+* choices
 
 
 Quick start
