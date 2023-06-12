@@ -391,3 +391,13 @@ class SPVCounterpartyTypeChoices(ChoiceEnum):
     PRTA = 54, "Portfolio Advisor"
     SUBA = 55, "Substitution Agent"
     OTHR = 100, "Other"
+
+
+class PaymentFrequencyChoices(ChoiceEnum):
+    DAIL = 1, "Daily"
+    WEEK = 2, "Weekly"
+    MNTH = 3, "Monthly"
+    QUTR = 4, "Quarterly"
+    SEMI = 5, "Semi Annual"
+    YEAR = 6, "Annual"
+    OTHR = 10, "Other"
