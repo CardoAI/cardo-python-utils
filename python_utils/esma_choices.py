@@ -8,7 +8,6 @@ Example: GUAR = 40, "Guarantee"
     "Guarantee" -> human-readable name, used for display purposes
 """
 
-
 from python_utils.choices import ChoiceEnum
 
 
@@ -149,11 +148,11 @@ class ESMACustomerTypeChoices(ChoiceEnum):
 
 class ESMAAmortisationTypeChoices(ChoiceEnum):
     FRXX = 1, "French - i.e. Amortisation in which the total amount — principal plus interest — repaid in each " \
-                "instalment is the same."
+              "instalment is the same."
     DEXX = 2, "German - i.e. Amortisation in which the first instalment is interest-only and the remaining " \
-                "instalments are constant, including capital amortisation and interest."
+              "instalments are constant, including capital amortisation and interest."
     FIXE = 3, "Fixed amortisation schedule - i.e. Amortisation in which the principal amount repaid in each " \
-               "instalment is the same."
+              "instalment is the same."
     BLLT = 4, "Bullet - i.e. Amortisation in which the full principal amount is repaid in the last instalment."
     OTHR = 10, "Other"
 
@@ -179,6 +178,14 @@ class ESMAReasonForDefaultOrForeclosureChoices(ChoiceEnum):
               "Regulation (EU) No 575/2013."
     UPPD = 3, "In default both because it is considered that the debtor is unlikely to pay and because any debt is " \
               "more than 90/180 days past due, in accordance with Article 178 of Regulation (EU) No 575/2013."
+
+
+class ESMASeniorityChoices(ChoiceEnum):
+    SNDB = 1, "Senior Debt"
+    MZZD = 2, "Mezzanine Debt"
+    JUND = 10, "Junior Debt"
+    SBOD = 10, "Subordinated Debt"
+    OTHR = 10, "Other"
 
 
 class ChargeTypeChoices(ChoiceEnum):
