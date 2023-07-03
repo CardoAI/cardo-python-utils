@@ -149,11 +149,11 @@ class ESMACustomerTypeChoices(ChoiceEnum):
 
 class ESMAAmortisationTypeChoices(ChoiceEnum):
     FRXX = 1, "French - i.e. Amortisation in which the total amount — principal plus interest — repaid in each " \
-                "instalment is the same."
+              "instalment is the same."
     DEXX = 2, "German - i.e. Amortisation in which the first instalment is interest-only and the remaining " \
-                "instalments are constant, including capital amortisation and interest."
+              "instalments are constant, including capital amortisation and interest."
     FIXE = 3, "Fixed amortisation schedule - i.e. Amortisation in which the principal amount repaid in each " \
-               "instalment is the same."
+              "instalment is the same."
     BLLT = 4, "Bullet - i.e. Amortisation in which the full principal amount is repaid in the last instalment."
     OTHR = 10, "Other"
 
@@ -401,3 +401,29 @@ class PaymentFrequencyChoices(ChoiceEnum):
     SEMI = 5, "Semi Annual"
     YEAR = 6, "Annual"
     OTHR = 10, "Other"
+
+
+class SPVExtensionClauseChoices(ChoiceEnum):
+    ISUR = 1, "SSPE only"
+    NHLD = 2, "Noteholder"
+    ISNH = 3, "Either SSPE or noteholder"
+    NOPT = 4, "No option"
+
+
+class SPVLiabilitySettlementConventionChoice(ChoiceEnum):
+    TONE = 1, "T Plus One"
+    TTWO = 2, "T Plus Two"
+    TTRE = 3, "T Plus Three"
+    ASAP = 4, "As soon as possible"
+    ENDC = 5, "At the end of Contract"
+    MONT = 6, "End of Month"
+    FUTU = 7, "Future"
+    NXTD = 8, "Next Day"
+    REGU = 9, "Regular"
+    TFIV = 10, "T Plus Five"
+    TFOR = 11, "T Plus Four"
+    WHIF = 12, "When and if issued"
+    WDIS = 13, "When Distributed"
+    WISS = 14, "When Issued"
+    WHID = 15, "When Issued or Distributed"
+    OTHR = 16, "Other"
