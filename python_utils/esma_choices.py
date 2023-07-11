@@ -2,10 +2,18 @@
 This module contains choices used also in ESMA reports.
 
 Choices structure:
-Example: GUAR = 40, "Guarantee"
-    GUAR -> ESMA code for the choice, to be used in reports
-    40 -> value stored in database
-    "Guarantee" -> human-readable name, used for display purposes
+Example: OVRD = 1, "Overdraft or Working Capital"
+    OVRD -> ESMA code for the choice, to be used in reports
+    1 -> value stored in database
+    "Overdraft or Working Capital" -> human-readable name, used for display purposes
+
+Exceptions:
+    There might be cases in which multiple choices are mapped to the same ESMA code.
+    In this case, some characters are added at the end of the ESMA code to differentiate it.
+    Example:
+        GUAR_G1 = 40, "Guarantee"
+        GUAR_G2 = 41, "Government Guarantee"
+    In such cases, only the part before the underscore (GUAR) (or the first 4 letters) is used in reports.
 """
 
 
@@ -112,9 +120,28 @@ class RecoverySourceChoices(ChoiceEnum):
     OTHR = 10, "Other"
 
 
+class RealEstateAssetClassChoices(ChoiceEnum):
+    OTRE_R1 = 30, "Other Real Estate"
+    OTRE_R2 = 31, "Hospitality"
+    OTHR_R1 = 32, "Plot of land"
+    OTHR_R2 = 33, "Agricultural"
+    OTHR_R3 = 34, "Ancillary units"
+    CBLD_R1 = 35, "Retail"
+    CBLD_R2 = 36, "Office"
+    IBLD = 37, "Industrial"
+    RBLD = 38, "Residential"
+
+
+
 class GuaranteeAssetClassChoices(ChoiceEnum):
-    GUAR = 40, "Guarantee"
-    GOVG = 41, "Government Guarantee"
+    GUAR_G1 = 40, "Personal Guarantee"
+    GUAR_G2 = 41, "Government Guarantee"
+    GUAR_G3 = 42, "Bank Guarantee"
+    GUAR_G4 = 43, "Corporate Guarantee"
+    OTHR_G1 = 44, "Pledge on titles"
+    OTHR_G2 = 45, "Pledge on goods or inventory"
+    OTHR_G3 = 46, "Pledge on others"
+    OTHR_G4 = 47, "Patronage letter"
 
 
 class ESMAAccountStatusChoices(ChoiceEnum):
