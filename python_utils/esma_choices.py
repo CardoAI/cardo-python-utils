@@ -132,7 +132,6 @@ class RealEstateAssetClassChoices(ChoiceEnum):
     RBLD = 38, "Residential"
 
 
-
 class GuaranteeAssetClassChoices(ChoiceEnum):
     GUAR_G1 = 40, "Personal Guarantee"
     GUAR_G2 = 41, "Government Guarantee"
@@ -336,8 +335,8 @@ class SPVCashAccountTypeChoices(ChoiceEnum):
     SORE = 3, "Set-off Reserve Account"
     LQDF = 4, "Liquidity Facility"
     MGAC = 5, "Margin Account"
-    COLLECTION_ACCOUNT = 6, "Collection Account"
-    OTHR = 10, "Other Account"
+    OTHR_1 = 6, "Collection Account"
+    OTHR_2 = 10, "Other Account"
 
 
 class SPVTriggerConsequenceChoices(ChoiceEnum):
