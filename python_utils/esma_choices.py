@@ -344,6 +344,7 @@ class SPVTriggerConsequenceChoices(ChoiceEnum):
     CHCP = 2, "Replacement of a counterparty"
     BOTH = 3, "Both change in the priority of payments and replacement of a counterparty"
     OTHR = 10, "Other consequence"
+    TERM = 4, "Termination Event"
 
 
 class SPVRiskWeightApproachChoices(ChoiceEnum):
