@@ -260,6 +260,7 @@ class InterestRateIndexChoices(ChoiceEnum):
     ECBR = 28, "European Central Bank Base Rate"
     LDOR = 29, "Lender's Own Rate"
     OTHR = 30, "Other"
+    SOFR = 31, "SOFR"
 
 
 class InterestRateIndexTenorChoices(ChoiceEnum):
