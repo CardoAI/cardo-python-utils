@@ -2,10 +2,18 @@
 This module contains choices used also in ESMA reports.
 
 Choices structure:
-Example: GUAR = 40, "Guarantee"
-    GUAR -> ESMA code for the choice, to be used in reports
-    40 -> value stored in database
-    "Guarantee" -> human-readable name, used for display purposes
+Example: OVRD = 1, "Overdraft or Working Capital"
+    OVRD -> ESMA code for the choice, to be used in reports
+    1 -> value stored in database
+    "Overdraft or Working Capital" -> human-readable name, used for display purposes
+
+Exceptions:
+    There might be cases in which multiple choices are mapped to the same ESMA code.
+    In this case, some characters are added at the end of the ESMA code to differentiate it.
+    Example:
+        GUAR_G1 = 40, "Guarantee"
+        GUAR_G2 = 41, "Government Guarantee"
+    In such cases, only the part before the underscore (GUAR) (or the first 4 letters) is used in reports.
 """
 
 from python_utils.choices import ChoiceEnum
@@ -111,9 +119,27 @@ class RecoverySourceChoices(ChoiceEnum):
     OTHR = 10, "Other"
 
 
+class RealEstateAssetClassChoices(ChoiceEnum):
+    OTRE_R1 = 30, "Other Real Estate"
+    OTRE_R2 = 31, "Hospitality"
+    OTHR_R1 = 32, "Plot of land"
+    OTHR_R2 = 33, "Agricultural"
+    OTHR_R3 = 34, "Ancillary units"
+    CBLD_R1 = 35, "Retail"
+    CBLD_R2 = 36, "Office"
+    IBLD = 37, "Industrial"
+    RBLD = 38, "Residential"
+
+
 class GuaranteeAssetClassChoices(ChoiceEnum):
-    GUAR = 40, "Guarantee"
-    GOVG = 41, "Government Guarantee"
+    GUAR_G1 = 40, "Personal Guarantee"
+    GUAR_G2 = 41, "Government Guarantee"
+    GUAR_G3 = 42, "Bank Guarantee"
+    GUAR_G4 = 43, "Corporate Guarantee"
+    OTHR_G1 = 44, "Pledge on titles"
+    OTHR_G2 = 45, "Pledge on goods or inventory"
+    OTHR_G3 = 46, "Pledge on others"
+    OTHR_G4 = 47, "Patronage letter"
 
 
 class ESMAAccountStatusChoices(ChoiceEnum):
@@ -241,6 +267,7 @@ class InterestRateIndexChoices(ChoiceEnum):
     ECBR = 28, "European Central Bank Base Rate"
     LDOR = 29, "Lender's Own Rate"
     OTHR = 30, "Other"
+    SOFR = 31, "SOFR"
 
 
 class InterestRateIndexTenorChoices(ChoiceEnum):
@@ -316,8 +343,8 @@ class SPVCashAccountTypeChoices(ChoiceEnum):
     SORE = 3, "Set-off Reserve Account"
     LQDF = 4, "Liquidity Facility"
     MGAC = 5, "Margin Account"
-    COLLECTION_ACCOUNT = 6, "Collection Account"
-    OTHR = 10, "Other Account"
+    OTHR_1 = 6, "Collection Account"
+    OTHR_2 = 10, "Other Account"
 
 
 class SPVTriggerConsequenceChoices(ChoiceEnum):
@@ -325,6 +352,7 @@ class SPVTriggerConsequenceChoices(ChoiceEnum):
     CHCP = 2, "Replacement of a counterparty"
     BOTH = 3, "Both change in the priority of payments and replacement of a counterparty"
     OTHR = 10, "Other consequence"
+    TERM = 4, "Termination Event"
 
 
 class SPVRiskWeightApproachChoices(ChoiceEnum):
@@ -408,3 +436,29 @@ class PaymentFrequencyChoices(ChoiceEnum):
     SEMI = 5, "Semi Annual"
     YEAR = 6, "Annual"
     OTHR = 10, "Other"
+
+
+class SPVExtensionClauseChoices(ChoiceEnum):
+    ISUR = 1, "SSPE only"
+    NHLD = 2, "Noteholder"
+    ISNH = 3, "Either SSPE or noteholder"
+    NOPT = 4, "No option"
+
+
+class SPVLiabilitySettlementConventionChoice(ChoiceEnum):
+    TONE = 1, "T Plus One"
+    TTWO = 2, "T Plus Two"
+    TTRE = 3, "T Plus Three"
+    ASAP = 4, "As soon as possible"
+    ENDC = 5, "At the end of Contract"
+    MONT = 6, "End of Month"
+    FUTU = 7, "Future"
+    NXTD = 8, "Next Day"
+    REGU = 9, "Regular"
+    TFIV = 10, "T Plus Five"
+    TFOR = 11, "T Plus Four"
+    WHIF = 12, "When and if issued"
+    WDIS = 13, "When Distributed"
+    WISS = 14, "When Issued"
+    WHID = 15, "When Issued or Distributed"
+    OTHR = 16, "Other"

@@ -24,6 +24,23 @@ class IChoice(ABC):
 
 
 class ChoiceEnumMeta(EnumMeta, IChoice, ABC):
+    def __new__(mcls, *args, **kwargs):
+        new_cls = super().__new__(mcls, *args, **kwargs)
+
+        # Make sure that the int values are unique
+        unique_values = set()
+        duplicate_values = set()
+        for el in new_cls.list_as(int):
+            if el in unique_values:
+                duplicate_values.add(str(el))
+            else:
+                unique_values.add(el)
+
+        if duplicate_values:
+            raise ValueError(f"Duplicate int values in {new_cls.__name__}: {', '.join(duplicate_values)}")
+
+        return new_cls
+
     def __contains__(cls, item: int | str) -> bool:
         if isinstance(item, int):
             member_values = [v.value[0] for v in cls.__members__.values()]
