@@ -435,6 +435,10 @@ class PaymentFrequencyChoices(ChoiceEnum):
     QUTR = 4, "Quarterly"
     SEMI = 5, "Semi Annual"
     YEAR = 6, "Annual"
+    TWENTY_EIGHT_DAYS = 7, "28 Days"
+    BI_WEEKLY = 8, "Bi-Weekly"
+    SEMI_MONTHLY = 9, "Semi-Monthly"
+    BI_MONTHLY = 11, "Bi-Monthly"
     OTHR = 10, "Other"
 
 
