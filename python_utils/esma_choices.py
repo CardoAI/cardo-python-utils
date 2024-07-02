@@ -300,6 +300,7 @@ class SPVAssetClassChoices(ChoiceEnum):
     NON_PERFORMING_LOAN = 18, "Non-Performing Loan"
     PUBLIC_CLAIMS = 19, "Public Claims"
     CDO = 20, "CDO"
+    RECREATIONAL_VEHICLE = 21, "Recreational Vehicle"
 
 
 class SPVWaterfallTypeChoices(ChoiceEnum):
