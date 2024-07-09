@@ -261,6 +261,7 @@ class InterestRateIndexChoices(ChoiceEnum):
     LDOR = 29, "Lender's Own Rate"
     OTHR = 30, "Other"
     SOFR = 31, "SOFR"
+    SONIA = 32, "SONIA"
 
 
 class InterestRateIndexTenorChoices(ChoiceEnum):
