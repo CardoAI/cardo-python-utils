@@ -130,6 +130,10 @@ class RealEstateAssetClassChoices(ChoiceEnum):
     CBLD_R2 = 36, "Office"
     IBLD = 37, "Industrial"
     RBLD = 38, "Residential"
+    OTRA = 39, "Other Real Estate Assets"
+    PUBX = 40, "Public"
+    SSTR = 41, "Self Storage"
+    MULF = 42, "Multifamily"
 
 
 class GuaranteeAssetClassChoices(ChoiceEnum):
