@@ -131,9 +131,9 @@ class RealEstateAssetClassChoices(ChoiceEnum):
     IBLD = 37, "Industrial"
     RBLD = 38, "Residential"
     OTRA = 39, "Other Real Estate Assets"
-    PUBX = 40, "Public"
-    SSTR = 41, "Self Storage"
-    MULF = 42, "Multifamily"
+    PUBX = 91, "Public"
+    SSTR = 92, "Self Storage"
+    MULF = 93, "Multifamily"
 
 
 class GuaranteeAssetClassChoices(ChoiceEnum):
