@@ -134,6 +134,7 @@ class RealEstateAssetClassChoices(ChoiceEnum):
     PUBX = 91, "Public"
     SSTR = 92, "Self Storage"
     MULF = 93, "Multifamily"
+    LEIS = 94, "Leisure"
 
 
 class GuaranteeAssetClassChoices(ChoiceEnum):
