@@ -307,6 +307,7 @@ class SPVAssetClassChoices(ChoiceEnum):
     PUBLIC_CLAIMS = 19, "Public Claims"
     CDO = 20, "CDO"
     RECREATIONAL_VEHICLE = 21, "Recreational Vehicle"
+    CORPORATE_LOAN = 22, "Corporate Loan"
 
 
 class SPVWaterfallTypeChoices(ChoiceEnum):
