@@ -426,6 +426,10 @@ class SPVCounterpartyTypeChoices(ChoiceEnum):
     CLOM = 53, "Collateralised Loan Obligation Manager"
     PRTA = 54, "Portfolio Advisor"
     SUBA = 55, "Substitution Agent"
+    BORR = 56, "Borrower"
+    UNDT = 57, "Underlying Trust"
+    DPST = 58, "Depositor"
+    AGNT = 59, "Agent"
     OTHR = 100, "Other"
 
 
