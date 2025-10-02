@@ -431,6 +431,8 @@ class SPVCounterpartyTypeChoices(ChoiceEnum):
     UNDT = 57, "Underlying Trust"
     DPST = 58, "Depositor"
     AGNT = 59, "Agent"
+    GENP = 60, "General Partner"
+    LIMP = 70, "Limited Partner"
     OTHR = 100, "Other"
 
 
