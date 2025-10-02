@@ -432,7 +432,7 @@ class SPVCounterpartyTypeChoices(ChoiceEnum):
     DPST = 58, "Depositor"
     AGNT = 59, "Agent"
     GENP = 60, "General Partner"
-    LIMP = 70, "Limited Partner"
+    LIMP = 61, "Limited Partner"
     OTHR = 100, "Other"
 
 
