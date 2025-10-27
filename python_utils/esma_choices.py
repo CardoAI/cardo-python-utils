@@ -309,6 +309,7 @@ class SPVAssetClassChoices(ChoiceEnum):
     RECREATIONAL_VEHICLE = 21, "Recreational Vehicle"
     CORPORATE_LOAN = 22, "Corporate Loan"
     BNPL = 23, "BNPL"
+    STUDENT_LOAN = 104, "Student Loan"
 
 
 class SPVWaterfallTypeChoices(ChoiceEnum):
