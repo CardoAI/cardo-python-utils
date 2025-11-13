@@ -1,0 +1,67 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cardo-python-utils"
+version = "0.5.dev0"
+description = "Python library enhanced with a wide range of functions for different scenarios."
+readme = "README.rst"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "Kristi Kotini", email = "hello@cardoai.com"},
+    {name = "Klajdi Çaushi", email = "hello@cardoai.com"}
+]
+keywords = ["utilities", "helpers", "django"]
+classifiers = [
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+]
+dependencies = []
+
+[project.optional-dependencies]
+django = [
+    "Django",
+]
+all = [
+    "Django",
+]
+dev = [
+    "pytest>=7.0",
+    "pytest-django>=4.5",
+    "coverage>=6.0",
+    "tox>=3.25",
+]
+
+[project.urls]
+Homepage = "https://github.com/CardoAI/cardo-python-utils"
+Repository = "https://github.com/CardoAI/cardo-python-utils.git"
+Issues = "https://github.com/CardoAI/cardo-python-utils/issues"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+exclude = ["tests", "tests.*"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "tests.settings"
+django_find_project = false
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+addopts = "--strict-markers --no-migrations --reuse-db --log-cli-level=INFO --doctest-modules"
+
+[tool.tox]
+legacy_tox_ini = "tox.ini"

@@ -1,4 +1,0 @@
-Django
-django-model-utils
-djangorestframework
-pandas==1.4.0

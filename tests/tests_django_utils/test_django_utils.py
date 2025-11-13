@@ -4,19 +4,18 @@ from unittest.mock import patch
 
 import pytest
 from django.core.files.uploadedfile import InMemoryUploadedFile
-from django.db.models import Subquery
 
-from python_utils.django_utils import record_to_dict, perform_query, get_total, get_min, get_average, get_max, \
-    get_choice_value, get_or_none, get_id_field_map, get_model_field_names, call_procedure, generate_file_from_buffer, \
+from python_utils.django.utils import record_to_dict, perform_query, get_total, get_min, get_average, get_max, \
+    get_or_none, get_id_field_map, get_model_field_names, call_procedure, generate_file_from_buffer, \
     ids, update_record, compute_weighted_average, compute_grouped_weighted_average, \
-    compute_grouped_weighted_average_subquery, get_fields_config_and_values, get_model_fields_config, safe_bulk_create, \
+    get_fields_config_and_values, get_model_fields_config, safe_bulk_create, \
     safe_bulk_update
 from tests.testapp.models import Invoice, Company
 from tests.tests_django_utils.tests_data import RECORD_TO_DICT_TEST_CASES, PERFORM_QUERY_TEST_CASES, \
-    GET_TOTAL_TEST_CASES, GET_MIN_TEST_CASES, GET_AVERAGE_TEST_CASES, GET_MAX_TEST_CASES, GET_CHOICE_VALUE_TEST_CASES, \
+    GET_TOTAL_TEST_CASES, GET_MIN_TEST_CASES, GET_AVERAGE_TEST_CASES, GET_MAX_TEST_CASES, \
     GET_ID_FIELD_MAP_TEST_CASES, CALL_PROCEDURE_TEST_CASES, GET_MODEL_FIELD_NAMES_TEST_CASES, IDS_TEST_CASES, \
     UPDATE_RECORD_SAVE_TRUE_TEST_CASES, COMPUTE_WEIGHTED_AVERAGE_TEST_CASES, \
-    COMPUTE_GROUPED_WEIGHTED_AVERAGE_TEST_CASES, COMPUTE_GROUPED_WEIGHTED_AVERAGE_SUBQUERY_TEST_CASES, \
+    COMPUTE_GROUPED_WEIGHTED_AVERAGE_TEST_CASES, \
     GET_FIELDS_CONFIG_AND_VALUES, GET_MODEL_FIELDS_CONFIG_TEST_CASES, SAFE_BULK_CREATE_TEST_CASES, \
     SAFE_BULK_UPDATE_TEST_CASES
 
@@ -62,12 +61,6 @@ def test_get_max(test_data, initial_invoices):
         'Wrong output from function!'
 
 
-@pytest.mark.parametrize('test_data', GET_CHOICE_VALUE_TEST_CASES)
-def test_get_choice_value(test_data):
-    assert test_data.output == get_choice_value(**test_data.input), \
-        'Wrong output from function!'
-
-
 @pytest.mark.django_db
 def test_get_or_none(initial_invoices):
     assert 1 == get_or_none(Invoice.objects, id=1).id, 'Wrong object was returned'
@@ -84,7 +77,7 @@ def test_get_id_field_map(test_data, initial_invoices):
 
 @pytest.mark.parametrize('test_data', CALL_PROCEDURE_TEST_CASES)
 def test_call_procedure(test_data):
-    with patch('python_utils.django_utils.perform_query') as mocked:
+    with patch('python_utils.django.utils.perform_query') as mocked:
         call_procedure(**test_data.input)
         mocked.assert_called_with(**test_data.output)
 
@@ -142,17 +135,6 @@ def test_compute_grouped_weighted_average(test_data, initial_invoices):
     assert test_data.output['count'] == output.count(), 'Wrong output from function!'
     for i, item in enumerate(output):
         assert test_data.output['avg'][i] == item['avg'], 'Wrong output from function!'
-
-
-@pytest.mark.django_db
-@pytest.mark.parametrize('test_data', COMPUTE_GROUPED_WEIGHTED_AVERAGE_SUBQUERY_TEST_CASES)
-def test_compute_grouped_weighted_average_subquery(test_data, initial_invoices):
-    test_data.input['field_subquery'] = Subquery(Invoice.objects.filter(amount=100).values('amount')[:1])
-    test_data.input['weight_subquery'] = Subquery(Invoice.objects.filter(amount=100).values('amount')[:1])
-    output = compute_grouped_weighted_average_subquery(**test_data.input)
-    assert test_data.output['count'] == output.count(), 'Wrong output from function!'
-    for item in output:
-        assert test_data.output['avg'] == item['avg'], 'Wrong avg output from function'
 
 
 @pytest.mark.django_db

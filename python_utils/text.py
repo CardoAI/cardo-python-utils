@@ -1,6 +1,5 @@
 import hashlib
 import re
-from decimal import Decimal
 from typing import Optional, List, Any
 
 from python_utils.types_hinting import NumberIFD
@@ -19,6 +18,7 @@ def format_percent(value: Optional[NumberIFD]):
         '1300%'
         >>> format_percent(0.13)
         '13.0%'
+        >>> from decimal import Decimal
         >>> format_percent(Decimal('0.123456'))
         '12.35%'
     """
@@ -37,6 +37,7 @@ def format_currency(value: Optional[NumberIFD], symbol: str) -> Optional[str]:
     Examples:
         >>> format_currency(120.1234, 'EUR')
         'EUR120.12'
+        >>> from decimal import Decimal
         >>> format_currency(Decimal('120.1234'), 'EUR')
         'EUR120.12'
         >>> format_currency(None, 'EUR') is None
@@ -63,7 +64,7 @@ def human_string(text: str) -> str:
     """
     if not text:
         return ""
-    return ' '.join(word.title() for word in text.split('_'))
+    return " ".join(word.title() for word in text.split("_"))
 
 
 camel_case_pattern = re.compile(r"(?<!^)(?=[A-Z])")
@@ -141,5 +142,5 @@ def create_hash(data: List[Any]) -> str:
         >>> create_hash(['test', 'hash', 1])
         '5ca1b365312e58a36bb985fc770a490b'
     """
-    merged_data = '-'.join([str(rec) for rec in data])
-    return hashlib.md5(merged_data.encode('utf-8')).hexdigest()
+    merged_data = "-".join([str(rec) for rec in data])
+    return hashlib.md5(merged_data.encode("utf-8")).hexdigest()

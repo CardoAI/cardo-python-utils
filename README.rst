@@ -11,9 +11,7 @@ Main utils:
 * data_structures
 * db
 * django
-* django_rest
 * math
-* pandas
 * exception
 * choices
 
@@ -25,7 +23,7 @@ Quick start
     from python_utils.time import date_range
     date_range(start_date, end_date)
 
-Although the library provides some utility functions related to other libraries like django and pandas, it does not install any dependencies automatically.
+Although the library provides some utility functions related to other libraries like django, it does not install any dependencies automatically.
 This means, you can install the library even if you do not use these libraries, but keep in mind that in this case you cannot use the
 functions that depend on them.
 
@@ -35,7 +33,7 @@ You can also chose to install the dependencies alongside the library, including 
 
 Tests
 -----
-The library has a 100% coverage by tests. If you want to see tests in action:
+The library has a high coverage by tests. If you want to see tests in action:
 
 1. Inside venv, run  ``pip install -r tests/requirements.txt``
 

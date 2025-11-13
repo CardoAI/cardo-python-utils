@@ -2,15 +2,6 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import Optional, Any, NamedTuple
 
-from model_utils import Choices
-
-SECTOR_LABELS = Choices(
-    (0, 'unknown', 'Unknown'),
-    (1, 'sec_a', 'Sector A'),
-    (2, 'sec_b', 'Sector B'),
-    (3, 'sec_c', 'Sector C'),
-)
-
 
 class Dummy:
     """

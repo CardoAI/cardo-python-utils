@@ -1,7 +1,5 @@
 from django.db import models
 
-from tests.utils import SECTOR_LABELS
-
 
 class Invoice(models.Model):
     id = models.PositiveSmallIntegerField(primary_key=True)
@@ -10,7 +8,6 @@ class Invoice(models.Model):
     f_amount = models.FloatField(null=True)
     tax = models.DecimalField(max_digits=40, decimal_places=20, default=5)
     issue_date = models.DateField()
-    sector_label = models.PositiveSmallIntegerField(choices=SECTOR_LABELS, default=SECTOR_LABELS.unknown)
     updated_at = models.DateField(null=True)
     company = models.ForeignKey('Company', null=True, on_delete=models.CASCADE,
                                 help_text='company this invoice belongs to')

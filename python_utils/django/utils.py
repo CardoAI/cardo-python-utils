@@ -64,25 +64,6 @@ def record_to_dict(record: Model_T, exclude: List = None) -> Dict:
     return initial_data
 
 
-def get_choices_list_and_dict(choices) -> Tuple[List, Dict]:
-    """
-    From a Choices object return a list and dict of these choices.
-    Args:
-        choices: Choices object to get the representations from
-    Returns:
-        tuple of list with human_value and dict-> {human_value: value}
-    Examples:
-        >>> from model_utils import Choices
-        >>> get_choices_list_and_dict(Choices((1, 'hello', 'HELLO')))
-        ([('HELLO', 'HELLO')], {'HELLO': 1})
-    """
-    import_optional_dependency('model_utils', dependency='django-model-utils')
-
-    choices_list = [(human_value, human_value) for _, human_value in choices]
-    choices_dict = {human_value: value for value, human_value in choices}
-    return choices_list, choices_dict
-
-
 def perform_query(
         sql_query: str,
         params: Optional[List] = None,
@@ -234,25 +215,6 @@ def update_record(record: Model_T, save=True, **data) -> Model_T:
         if save:
             record.save()
     return record
-
-
-def get_choice_value(choices, human_string: str) -> Optional[Union[int, str]]:
-    """
-    Get database representation of a choice for a human-readable value
-
-    Args:
-        choices: model_utils Choice object to get the db value from
-        human_string: string representing the human-readable value
-    Returns:
-        db representation of choice field
-    """
-
-    import_optional_dependency('model_utils', dependency='django-model-utils')
-
-    for value, representation in choices:
-        if representation == human_string:
-            return value
-    return None
 
 
 def get_or_none(records: models.QuerySet, *args, **kwargs) -> Optional[Model_T]:

@@ -31,8 +31,6 @@ class Migration(migrations.Migration):
                 ('f_amount', models.FloatField(null=True)),
                 ('tax', models.DecimalField(decimal_places=20, default=5, max_digits=40)),
                 ('issue_date', models.DateField()),
-                ('sector_label', models.PositiveSmallIntegerField(
-                    choices=[(0, 'Unknown'), (1, 'Sector A'), (2, 'Sector B'), (3, 'Sector C')], default=0)),
                 ('updated_at', models.DateField(null=True)),
                 ('active', models.BooleanField(default=True)),
                 ('history_info', models.JSONField(default={})),

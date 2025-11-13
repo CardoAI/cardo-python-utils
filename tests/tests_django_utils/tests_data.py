@@ -1,21 +1,21 @@
 from datetime import date
 
 from tests.testapp.models import Invoice, Company
-from tests.utils import TestCase, SECTOR_LABELS
+from tests.utils import TestCase
 
 RECORD_TO_DICT_TEST_CASES = [
     TestCase(
         description='Case 0: exclude=None',
         input={'record': Invoice(code='Test', amount=100, issue_date='2021-1-1')},
         output={'active': True, 'amount': 100, 'code': 'Test', 'company_id': None, 'created_at': None, 'f_amount': None,
-                'history_info': {}, 'id': None, 'issue_date': '2021-1-1', 'sector_label': 'Unknown', 'tax': 5,
+                'history_info': {}, 'id': None, 'issue_date': '2021-1-1', 'tax': 5,
                 'updated_at': None},
     ),
     TestCase(
         description='Case 1: Passing exclude list',
         input={
             'record': Invoice(code='Test', amount=100, issue_date='2021-1-1'),
-            'exclude': ['issue_date', 'sector_label', 'updated_at', 'company_id', 'tax', 'history_info', 'created_at',
+            'exclude': ['issue_date', 'updated_at', 'company_id', 'tax', 'history_info', 'created_at',
                         'f_amount', 'active']
         },
         output={'id': None, 'code': 'Test', 'amount': 100},
@@ -24,13 +24,13 @@ RECORD_TO_DICT_TEST_CASES = [
 PERFORM_QUERY_TEST_CASES = [
     TestCase(
         description='Case 0: Select * query',
-        input={'sql_query': 'SELECT id, amount, code, issue_date, sector_label, company_id  FROM test_invoice'},
+        input={'sql_query': 'SELECT id, amount, code, issue_date, company_id  FROM test_invoice'},
         output=[
-            {'amount': 0, 'code': 'T-0', 'id': 1, 'issue_date': date(2021, 1, 1), 'sector_label': 0,
+            {'amount': 0, 'code': 'T-0', 'id': 1, 'issue_date': date(2021, 1, 1),
              'company_id': None},
-            {'amount': 100, 'code': 'T-1', 'id': 2, 'issue_date': date(2021, 1, 1), 'sector_label': 0,
+            {'amount': 100, 'code': 'T-1', 'id': 2, 'issue_date': date(2021, 1, 1),
              'company_id': None},
-            {'amount': 200, 'code': 'T-2', 'id': 3, 'issue_date': date(2021, 1, 1), 'sector_label': 0,
+            {'amount': 200, 'code': 'T-2', 'id': 3, 'issue_date': date(2021, 1, 1),
              'company_id': None}
         ],
     ),
@@ -94,18 +94,6 @@ GET_MAX_TEST_CASES = [
         output=None
     ),
 ]
-GET_CHOICE_VALUE_TEST_CASES = [
-    TestCase(
-        description='Case 0: existing human string',
-        input={'choices': SECTOR_LABELS, 'human_string': 'Sector A'},
-        output=1
-    ),
-    TestCase(
-        description='Case 1: not found db repr for human string',
-        input={'choices': SECTOR_LABELS, 'human_string': 'Not Found'},
-        output=None
-    )
-]
 GET_ID_FIELD_MAP_TEST_CASES = [
     TestCase(
         description='Case 0: Get mapping of code field',
@@ -129,7 +117,7 @@ GET_MODEL_FIELD_NAMES_TEST_CASES = [
     TestCase(
         description='Case 0: model: Invoice',
         input={'model': Invoice},
-        output=['id', 'code', 'amount', 'f_amount', 'tax', 'issue_date', 'sector_label', 'updated_at', 'company',
+        output=['id', 'code', 'amount', 'f_amount', 'tax', 'issue_date', 'updated_at', 'company',
                 'active', 'history_info', 'created_at']
     ),
 ]
@@ -206,27 +194,7 @@ COMPUTE_GROUPED_WEIGHTED_AVERAGE_TEST_CASES = [
             'group_by': [],
         },
         output={'count': 3, 'avg': [0, 100, 200]}
-    ),
-    TestCase(
-        description='Case 1: Default behaviour, group_by list',
-        input={
-            'records': Invoice.objects.all(),
-            'field': 'amount',
-            'weight': 'tax',
-            'group_by': ['sector_label'],
-        },
-        output={'count': 1, 'avg': [100]}
-    ),
-]
-COMPUTE_GROUPED_WEIGHTED_AVERAGE_SUBQUERY_TEST_CASES = [
-    TestCase(
-        description='Case 0: Default behaviour',
-        input={
-            'records': Invoice.objects.all(),
-            'group_by': ['sector_label'],
-        },
-        output={'count': 1, 'avg': 100}
-    ),
+    )
 ]
 GET_FIELDS_CONFIG_AND_VALUES = [
     TestCase(
@@ -237,12 +205,7 @@ GET_FIELDS_CONFIG_AND_VALUES = [
                 {'name': 'amount', 'type': 'amount', 'description': '', 'input': True, 'value': 100},
                 {'name': 'f_amount', 'type': 'float', 'description': '', 'input': True, 'value': None},
                 {'name': 'issue_date', 'type': 'date', 'description': '', 'input': True,
-                 'value': date(2021, 1, 1)}, {'name': 'sector_label', 'type': 'selection', 'description': '',
-                                              'choices': [{'id': 0, 'name': 'Unknown'},
-                                                          {'id': 1, 'name': 'Sector A'},
-                                                          {'id': 2, 'name': 'Sector B'},
-                                                          {'id': 3, 'name': 'Sector C'}], 'input': True,
-                                              'value': 0},
+                 'value': date(2021, 1, 1)},
                 {'name': 'updated_at', 'type': 'date', 'description': '', 'input': True,
                  'value': None},
                 {'name': 'company', 'type': 'selection', 'description': 'company this invoice belongs to',
