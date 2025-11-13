@@ -76,7 +76,7 @@ class ChoiceEnum(Enum, metaclass=ChoiceEnumMeta):
 
     @classmethod
     def get_by_value(cls, value: str | int):
-        value_index = 0 if type(value) == int else 1
+        value_index = 0 if isinstance(value, int) else 1
         return next((v for v in cls.__members__.values() if v.value[value_index] == value), None)
 
     @classmethod

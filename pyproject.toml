@@ -35,6 +35,20 @@ dependencies = []
 django = [
     "Django",
 ]
+django-ninja = [
+    "Django",
+    "django-ninja",
+    "PyJWT",
+]
+drf = [
+    "Django",
+    "djangorestframework",
+    "PyJWT",
+]
+django-admin-auth = [
+    "Django",
+    "mozilla-django-oidc>=4.0.1",
+]
 all = [
     "Django",
 ]

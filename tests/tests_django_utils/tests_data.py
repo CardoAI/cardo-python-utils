@@ -280,7 +280,7 @@ SAFE_BULK_UPDATE_TEST_CASES = [
         description='Case 1: no foreign key update',
         input={
             'model': Invoice,
-            'records': [Invoice(id=i + 1, code=f'updated') for i in range(3)],
+            'records': [Invoice(id=i + 1, code='updated') for i in range(3)],
             'fields': ['code'],
             'refresh_fields': None
         },
@@ -295,7 +295,7 @@ SAFE_BULK_UPDATE_TEST_CASES = [
         description='Case 2: foreign key update',
         input={
             'model': Invoice,
-            'records': [Invoice(id=i + 1, code=f'updated') for i in range(3)],
+            'records': [Invoice(id=i + 1, code='updated') for i in range(3)],
             'fields': ['code', 'company'],
             'refresh_fields': ['company', 'not_found_key']
         },

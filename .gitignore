@@ -1,5 +1,5 @@
 .idea/
-*.egg-info/*
+*.egg-info/
 *.pytest_cache
 *.tox
 .python-version
