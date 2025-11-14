@@ -44,6 +44,4 @@ class OIDCCustomAuthenticationBackend(OIDCAuthenticationBackend):
 
 
 def has_permission(request):
-    # The user does not need to be staff to access the admin site
-    # Only superusers will have access to do anything in the admin site
-    return request.user.is_active and request.user.is_superuser
+    return request.user.is_active
