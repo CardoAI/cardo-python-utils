@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cardo-python-utils"
-version = "0.5.dev6"
+version = "0.5.dev7"
 description = "Python library enhanced with a wide range of functions for different scenarios."
 readme = "README.rst"
 requires-python = ">=3.8"
@@ -31,10 +31,8 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
-django-keycloak-api = [
+django-keycloak = [
     "PyJWT>=2.10.1",
-]
-django-keycloak-admin = [
     "mozilla-django-oidc>=4.0.1",
 ]
 django-keycloak-groups = [
