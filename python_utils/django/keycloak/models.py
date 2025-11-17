@@ -15,5 +15,8 @@ class UserGroupBase(models.Model):
         db_index=True,
     )
 
+    def __str__(self):
+        return self.path
+
     class Meta:
         abstract = True

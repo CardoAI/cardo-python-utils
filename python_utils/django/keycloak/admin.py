@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 from .service import KeycloakService
 
 
-class UserGroupAdmin(admin.ModelAdmin):
+class UserGroupAdminBase(admin.ModelAdmin):
     list_display = ("path",)
     search_fields = ("id", "path")
     readonly_fields = ("id", "path")
