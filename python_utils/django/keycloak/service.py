@@ -70,7 +70,7 @@ class KeycloakService:
         except AttributeError:
             raise LookupError(
                 "Please set KEYCLOAK_USER_GROUP_MODEL in your Django settings "
-                "(e.g., 'myapp.models.UserGroup')."
+                "(e.g., 'myapp.UserGroup')."
             )
 
         return apps.get_model(model_string)
