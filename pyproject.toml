@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cardo-python-utils"
-version = "0.5.dev1"
+version = "0.5.dev2"
 description = "Python library enhanced with a wide range of functions for different scenarios."
 readme = "README.rst"
 requires-python = ">=3.8"
@@ -47,6 +47,10 @@ drf = [
 django-admin-auth = [
     "Django",
     "mozilla-django-oidc>=4.0.1",
+]
+django-keycloak-groups = [
+    "Django",
+    "python-keycloak>=5.8.1",
 ]
 all = [
     "Django",

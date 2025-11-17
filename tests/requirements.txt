@@ -2,3 +2,4 @@ Django
 pytest-django
 coverage
 tox
+python-keycloak
