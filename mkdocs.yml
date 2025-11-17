@@ -1,0 +1,70 @@
+site_name: CardoAI Python Utils
+repo_url: https://github.com/CardoAI/cardo-python-utils
+repo_name: cardo-python-utils
+nav:
+  - Home: index.md
+  - API Reference:
+      - python_utils:
+          choices: api_reference/python_utils/choices.md
+          data_structures: api_reference/python_utils/data_structures.md
+          db: api_reference/python_utils/db.md
+          django_utils: api_reference/python_utils/django_utils.md
+          esma_choices: api_reference/python_utils/esma_choices.md
+          exceptions: api_reference/python_utils/exceptions.md
+          imports: api_reference/python_utils/imports.md
+          math: api_reference/python_utils/math.md
+          pandas_utils: api_reference/python_utils/pandas_utils.md
+          rest: api_reference/python_utils/rest.md
+          text: api_reference/python_utils/text.md
+          time: api_reference/python_utils/time.md
+          types_hinting: api_reference/python_utils/types_hinting.md
+theme:
+  name: material
+  logo: assets/cardoai_logo.png
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      accent: deep orange
+      primary: deep purple
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - scheme: slate
+      accent: deep orange
+      primary: deep purple
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+  font:
+    code: JetBrains Mono
+    text: Roboto Slab
+  features:
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - toc.follow
+    - navigation.top
+    - navigation.indexes
+# for different versions of the library
+extra:
+  version:
+    provider: mike
+# for the API reference
+plugins:
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_submodules: true
+  - search
+# for KaTeX
+extra_javascript:
+  - javascripts/katex.js
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js
+extra_css:
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css
+exclude:
+  - Dockerfile
+  - k8s/
