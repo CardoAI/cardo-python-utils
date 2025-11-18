@@ -27,7 +27,10 @@ class AuthBearer(HttpBearer):
 
         self._verify_scopes(request, payload)
 
-        return user
+        request.user = user
+
+        # The return value is stored in request.auth
+        return payload
 
     def _verify_scopes(self, request, token_payload):
         allowed_scopes = self._get_view_allowed_scopes(request)
