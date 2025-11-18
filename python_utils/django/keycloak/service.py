@@ -4,10 +4,32 @@ from keycloak import KeycloakAdmin
 from keycloak import KeycloakOpenIDConnection
 from keycloak.exceptions import KeycloakGetError
 
+def _get_user_group_model():
+    """
+    Dynamically get the UserGroup model.
+
+    Attempts to use the model specified in settings.KEYCLOAK_USER_GROUP_MODEL.
+
+    Returns:
+        The UserGroup model class.
+
+    Raises:
+        LookupError: If the model cannot be found.
+    """
+    try:
+        model_string = getattr(settings, "KEYCLOAK_USER_GROUP_MODEL")
+    except AttributeError:
+        raise LookupError(
+            "Please set KEYCLOAK_USER_GROUP_MODEL in your Django settings "
+            "(e.g., 'myapp.UserGroup')."
+        )
+
+    return apps.get_model(model_string)
+
 
 class KeycloakService:
     def __init__(self):
-        self._user_group_model = self._get_user_group_model()
+        self._user_group_model = _get_user_group_model()
         self._keycloak_admin = self._get_keycloak_admin()
 
     def sync_user_groups(self, raise_exceptions: bool = False):
@@ -53,28 +75,6 @@ class KeycloakService:
         )
         return KeycloakAdmin(connection=keycloak_connection)
 
-    def _get_user_group_model(self):
-        """
-        Dynamically get the UserGroup model.
-
-        Attempts to use the model specified in settings.KEYCLOAK_USER_GROUP_MODEL.
-
-        Returns:
-            The UserGroup model class.
-
-        Raises:
-            LookupError: If the model cannot be found.
-        """
-        try:
-            model_string = getattr(settings, "KEYCLOAK_USER_GROUP_MODEL")
-        except AttributeError:
-            raise LookupError(
-                "Please set KEYCLOAK_USER_GROUP_MODEL in your Django settings "
-                "(e.g., 'myapp.UserGroup')."
-            )
-
-        return apps.get_model(model_string)
-
     def _process_group_recursively(
         self, group, existing_groups_by_id, reported_group_ids
     ):
@@ -98,3 +98,33 @@ class KeycloakService:
                 self._process_group_recursively(
                     subgroup, existing_groups_by_id, reported_group_ids
                 )
+
+
+class AuthServiceBase:
+    @staticmethod
+    def _get_all_level_paths(path: str) -> list[str]:
+        """
+        Given a group path, return all level paths up to the root.
+        E.g., for "/a/b/c", return ["/a/b/c", "/a/b", "/a"]
+        """
+        paths = []
+        while "/" in path:
+            paths.append(path)
+            path = "/".join(path.split("/")[:-1])
+        return paths
+
+    @classmethod
+    def _get_user_groups_from_paths(cls, group_paths: list[str]):
+        all_group_paths = set()
+        for path in group_paths:
+            all_group_paths.update(cls._get_all_level_paths(path))
+
+        UserGroup = _get_user_group_model()
+        user_groups = UserGroup.objects.filter(path__in=all_group_paths)
+
+        # If a group is missing/has been renamed in Keycloak, sync the groups
+        if user_groups.count() != len(all_group_paths):
+            KeycloakService().sync_user_groups()
+            user_groups = UserGroup.objects.filter(path__in=all_group_paths)
+
+        return user_groups
