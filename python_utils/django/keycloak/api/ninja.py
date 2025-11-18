@@ -1,27 +1,18 @@
 from typing import Literal
 
-from jwt import PyJWKClient, decode as jwt_decode
 from jwt.exceptions import InvalidTokenError
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from ninja.security import HttpBearer
 from ninja.errors import AuthenticationError, HttpError
 
-jwks_client = PyJWKClient(getattr(settings, "JWKS_URL", ""))
+from .utils import create_or_update_user, decode_jwt
 
 
 class AuthBearer(HttpBearer):
     def authenticate(self, request, token):
-        signing_key = jwks_client.get_signing_key_from_jwt(token)
-
         try:
-            payload = jwt_decode(
-                token,
-                signing_key.key,
-                algorithms=["RS256"],
-                audience=getattr(settings, "JWT_AUDIENCE", None),
-            )
+            payload = decode_jwt(token)
         except InvalidTokenError as e:
             raise AuthenticationError(f"Invalid token: {str(e)}") from e
 
@@ -32,45 +23,11 @@ class AuthBearer(HttpBearer):
                 "Invalid token: preferred_username not present."
             ) from e
 
-        user = self._get_user(username, payload)
+        user = create_or_update_user(username, payload)
 
         self._verify_scopes(request, payload)
 
         return user
-
-    def _get_user(self, username: str, payload: dict):
-        """
-        Get or create a user based on the JWT payload.
-        If the user exists, update their details.
-        """
-        user_model = get_user_model()
-        user_data = {
-            "first_name": payload.get("given_name") or "",
-            "last_name": payload.get("family_name") or "",
-            "email": payload.get("email") or "",
-            "is_staff": payload.get("is_staff", False),
-        }
-        if hasattr(user_model, "is_demo"):
-            user_data["is_demo"] = payload.get("is_demo", False)
-
-        user = user_model.objects.filter(username=username).first()
-        if user:
-            update_needed = False
-
-            for field, value in user_data.items():
-                if getattr(user, field) != value:
-                    setattr(user, field, value)
-                    update_needed = True
-
-            if update_needed:
-                user.save(update_fields=list(user_data.keys()))
-
-            return user
-        else:
-            return user_model.objects.create(
-                username=username,
-                **user_data,
-            )
 
     def _verify_scopes(self, request, token_payload):
         allowed_scopes = self._get_view_allowed_scopes(request)

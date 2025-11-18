@@ -1,31 +1,19 @@
-import jwt
-
 from django.conf import settings
-from django.contrib.auth import get_user_model
-from jwt import PyJWKClient
 from jwt.exceptions import InvalidTokenError
 
 from rest_framework import authentication
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import BasePermission
 
-
-jwks_client = PyJWKClient(getattr(settings, "JWKS_URL", ""))
+from .utils import create_or_update_user, decode_jwt
 
 
 class AuthenticationBackend(authentication.TokenAuthentication):
     keyword = "Bearer"
 
     def authenticate_credentials(self, token: str):
-        signing_key = jwks_client.get_signing_key_from_jwt(token)
-
         try:
-            payload = jwt.decode(
-                token,
-                signing_key.key,
-                algorithms=["RS256"],
-                audience=getattr(settings, "JWT_AUDIENCE", None),
-            )
+            payload = decode_jwt(token)
         except InvalidTokenError as e:
             raise AuthenticationFailed(f"Invalid token: {str(e)}") from e
 
@@ -36,42 +24,8 @@ class AuthenticationBackend(authentication.TokenAuthentication):
                 "Invalid token: preferred_username not present."
             ) from e
 
-        user = self._get_user(username, payload)
+        user = create_or_update_user(username, payload)
         return user, payload
-
-    def _get_user(self, username: str, payload: dict):
-        """
-        Get or create a user based on the JWT payload.
-        If the user exists, update their details.
-        """
-        user_model = get_user_model()
-        user_data = {
-            "first_name": payload.get("given_name") or "",
-            "last_name": payload.get("family_name") or "",
-            "email": payload.get("email") or "",
-            "is_staff": payload.get("is_staff", False),
-        }
-        if hasattr(user_model, "is_demo"):
-            user_data["is_demo"] = payload.get("is_demo", False)
-
-        user = user_model.objects.filter(username=username).first()
-        if user:
-            update_needed = False
-
-            for field, value in user_data.items():
-                if getattr(user, field) != value:
-                    setattr(user, field, value)
-                    update_needed = True
-
-            if update_needed:
-                user.save(update_fields=list(user_data.keys()))
-
-            return user
-        else:
-            return user_model.objects.create(
-                username=username,
-                **user_data,
-            )
 
 
 class HasScope(BasePermission):
