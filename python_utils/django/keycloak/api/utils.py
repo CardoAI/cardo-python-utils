@@ -6,6 +6,7 @@ from jwt import decode, PyJWKClient
 
 jwks_client = PyJWKClient(getattr(settings, "JWKS_URL", ""))
 
+User = get_user_model()
 
 class TokenPayload(TypedDict, total=False):
     exp: int
@@ -43,35 +44,68 @@ def decode_jwt(token: str) -> TokenPayload:
     )
 
 
-def create_or_update_user(username: str, payload: TokenPayload):
+def get_user_data_from_payload(payload: TokenPayload) -> dict:
     """
-    Create or update a user based on the JWT payload.
+    Extract user data from the JWT payload.
     """
-    user_model = get_user_model()
     user_data = {
         "first_name": payload.get("given_name") or "",
         "last_name": payload.get("family_name") or "",
         "email": payload.get("email") or "",
         "is_staff": payload.get("is_staff", False),
     }
-    if hasattr(user_model, "is_demo"):
+
+    if hasattr(User, "is_demo"):
         user_data["is_demo"] = payload.get("is_demo", False)
 
-    user = user_model.objects.filter(username=username).first()
-    if user:
-        update_needed = False
+    return user_data
 
-        for field, value in user_data.items():
-            if getattr(user, field) != value:
-                setattr(user, field, value)
-                update_needed = True
+
+def update_user_from_user_data(user, user_data: dict) -> bool:
+    update_needed = False
+
+    for field, value in user_data.items():
+        if getattr(user, field) != value:
+            setattr(user, field, value)
+            update_needed = True
+
+    return update_needed
+
+
+def create_or_update_user(username: str, payload: TokenPayload):
+    """
+    Create or update a user based on the JWT payload.
+    """
+    user_data = get_user_data_from_payload(payload)
+
+    user = User.objects.filter(username=username).first()
+    if user:
+        update_needed = update_user_from_user_data(user, user_data)
 
         if update_needed:
             user.save(update_fields=list(user_data.keys()))
 
         return user
     else:
-        return user_model.objects.create(
+        return User.objects.create(
+            username=username,
+            **user_data,
+        )
+
+
+async def acreate_or_update_user(username: str, payload: TokenPayload):
+    user_data = get_user_data_from_payload(payload)
+
+    user = await User.objects.filter(username=username).afirst()
+    if user:
+        update_needed = update_user_from_user_data(user, user_data)
+
+        if update_needed:
+            await user.asave(update_fields=list(user_data.keys()))
+
+        return user
+    else:
+        return await User.objects.acreate(
             username=username,
             **user_data,
         )
