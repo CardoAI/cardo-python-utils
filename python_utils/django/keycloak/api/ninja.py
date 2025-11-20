@@ -1,5 +1,5 @@
 import logging
-from typing import Literal, Optional
+from typing import Literal, Optional, Union
 
 from jwt.exceptions import InvalidTokenError
 
@@ -93,7 +93,7 @@ class AuthBearer(HttpBearer):
 
         if scopes is None:
             raise Exception(
-                f"No allowed_scopes defined on the view {view_function.__name__}."
+                f"No allowed_scopes defined on the view {view_function.__name__}. "
                 "Add the decorator @allowed_scopes([...]) or @allowed_scopes('*') to the view."
             )
 
@@ -138,7 +138,7 @@ class AuthBearerAsync(AuthBearer):
         return payload
 
 
-def allowed_scopes(scopes: list[str] | Literal["*"]):
+def allowed_scopes(scopes: Union[list[str], Literal["*"]]):
     """
     A decorator that attaches a list of required scopes to a view function
     in the attribute `_allowed_scopes`.

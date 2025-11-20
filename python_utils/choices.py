@@ -9,6 +9,7 @@ It adds some useful methods to the Enum class, such as:
 
 from abc import ABC, abstractmethod
 from enum import EnumMeta, Enum
+from typing import Union
 
 
 class IChoice(ABC):
@@ -41,7 +42,7 @@ class ChoiceEnumMeta(EnumMeta, IChoice, ABC):
 
         return new_cls
 
-    def __contains__(cls, item: int | str) -> bool:
+    def __contains__(cls, item: Union[int, str]) -> bool:
         if isinstance(item, int):
             member_values = [v.value[0] for v in cls.__members__.values()]
         elif isinstance(item, str):
@@ -75,12 +76,12 @@ class ChoiceEnum(Enum, metaclass=ChoiceEnumMeta):
         return {elm.value[0]: elm.value[1] for elm in cls}
 
     @classmethod
-    def get_by_value(cls, value: str | int):
+    def get_by_value(cls, value: Union[str, int]):
         value_index = 0 if isinstance(value, int) else 1
         return next((v for v in cls.__members__.values() if v.value[value_index] == value), None)
 
     @classmethod
-    def list_as(cls, item_type) -> list[int | str]:
+    def list_as(cls, item_type) -> list[Union[int, str]]:
         if item_type not in [int, str]:
             raise TypeError('Invalid item type')
         return list(map(item_type, cls))

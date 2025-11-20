@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import TypedDict, Union
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -13,7 +13,7 @@ class TokenPayload(TypedDict, total=False):
     iat: int
     jti: str
     iss: str
-    aud: str | list[str]
+    aud: Union[str, list[str]]
     typ: str
     azp: str
     sid: str
