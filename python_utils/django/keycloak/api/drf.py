@@ -42,18 +42,32 @@ class HasScope(BasePermission):
         allowed_scopes = ["jobs"]
         ...
 
+    It is possible to define different scopes per HTTP method 
+    by setting `allowed_scopes` as a dict:
+    
+    class MyApiView(APIView):
+        permission_classes = [IsAuthenticated, HasScope]
+        allowed_scopes = {
+            "get": ["jobs"],
+            "post": ["jobs_admin"],
+        }
+        ...
+
     If no particular scope is required, you can set `allowed_scopes = "*"`
         to allow access without scope checks.
     """
 
     def has_permission(self, request, view):
-        allowed_scopes = getattr(view, "allowed_scopes", [])
+        allowed_scopes = getattr(view, "allowed_scopes", None)
 
         if not allowed_scopes:
             raise Exception(
                 f"No allowed_scopes defined on the view '{view.__class__.__name__}'. "
                 "Define allowed_scopes or set it to '*' to allow any scope."
             )
+        
+        if isinstance(allowed_scopes, dict):
+            allowed_scopes = allowed_scopes.get(request.method.lower(), [])
 
         if allowed_scopes == "*":
             return True
