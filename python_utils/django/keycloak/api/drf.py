@@ -13,7 +13,7 @@ class AuthenticationBackend(authentication.TokenAuthentication):
 
     def authenticate_credentials(self, token: str):
         try:
-            payload = decode_jwt(token)
+            payload = decode_jwt(token, audience=self._get_audience())
         except InvalidTokenError as e:
             raise AuthenticationFailed(f"Invalid token: {str(e)}") from e
 
@@ -26,6 +26,12 @@ class AuthenticationBackend(authentication.TokenAuthentication):
 
         user = create_or_update_user(username, payload)
         return user, payload
+    
+    def _get_audience(self):
+        """
+        Allows subclasses to override the audience used for JWT decoding.
+        """
+        return getattr(settings, "JWT_AUDIENCE", None)
 
 
 class HasScope(BasePermission):

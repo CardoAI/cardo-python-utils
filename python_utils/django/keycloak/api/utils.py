@@ -1,4 +1,4 @@
-from typing import TypedDict, Union
+from typing import Optional, TypedDict, Union
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -27,7 +27,7 @@ class TokenPayload(TypedDict, total=False):
     groups: list[str]  # Full path of the user group, e.g. "/group1/subgroup1"
 
 
-def decode_jwt(token: str) -> TokenPayload:
+def decode_jwt(token: str, audience: Optional[str] = None) -> TokenPayload:
     """
     Decode a JWT token using the public certificate of the Auth Server.
 
@@ -36,11 +36,14 @@ def decode_jwt(token: str) -> TokenPayload:
     """
     signing_key = jwks_client.get_signing_key_from_jwt(token)
 
+    if audience is None:
+        audience = getattr(settings, "JWT_AUDIENCE", None)
+
     return decode(
         token,
         signing_key.key,
         algorithms=["RS256"],
-        audience=getattr(settings, "JWT_AUDIENCE", None),
+        audience=audience,
     )
 
 
