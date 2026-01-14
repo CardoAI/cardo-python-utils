@@ -8,8 +8,8 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.backends import default_backend
 from unittest.mock import patch
 
-from django.keycloak.models.user_group import UserGroupBase
-from django.keycloak.service import get_user_group_model
+from ..models.user_group import UserGroupBase
+from ..service import get_user_group_model
 
 
 class MockKeycloakIdP:
