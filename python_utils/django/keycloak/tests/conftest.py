@@ -1,15 +1,16 @@
 import base64
 from collections.abc import Callable
-import uuid
 import jwt
 import time
 
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.backends import default_backend
+from django.conf import settings
 from unittest.mock import patch
 
+import pytest
+
 from ..models.user_group import UserGroupBase
-from ..service import get_user_group_model
 
 
 class MockKeycloakIdP:
@@ -54,6 +55,16 @@ class MockKeycloakIdP:
         return jwt.encode(payload, self.private_key, algorithm="RS256", headers={"kid": self.kid})
 
 
+@pytest.fixture(scope="session")
+def keycloak_idp() -> MockKeycloakIdP:
+    """
+    Initializes the Mock IdP once for the entire test session,
+    as generating RSA keys is slow.
+    """
+    return MockKeycloakIdP(audience=getattr(settings, "JWT_AUDIENCE", "test-audience"))
+
+
+@pytest.fixture(autouse=True)
 def mock_pyjwk_client(keycloak_idp):
     """
     Patches PyJWKClient to return our mock keys instead of hitting the network.
@@ -63,6 +74,7 @@ def mock_pyjwk_client(keycloak_idp):
         yield mock_fetch
 
 
+@pytest.fixture(autouse=True)
 def mock_verify_scopes_ninja():
     """
     Patches AuthBearer._verify_scopes, so that no real scope checking is done during tests.
@@ -73,15 +85,17 @@ def mock_verify_scopes_ninja():
         yield mock_verify
 
 
-def make_user_group(**kwargs) -> Callable[..., UserGroupBase]:
-    user_group_model = get_user_group_model()
+@pytest.fixture
+def make_user_group() -> Callable[..., UserGroupBase]:
+    from model_bakery import baker
 
-    if "id" not in kwargs:
-        kwargs["id"] = uuid.uuid4()
+    def _prepare_user_group(**overrides) -> UserGroupBase:
+        user_group = baker.make("UserGroup", **overrides)
 
-    if "path" not in kwargs:
-        kwargs["path"] = "/test-group"
-    elif not kwargs["path"].startswith("/"):
-        kwargs["path"] = f"/{kwargs['path']}"
+        if not user_group.path.startswith("/"):
+            user_group.path = f"/{user_group.path}"
+            user_group.save()
 
-    return user_group_model.objects.create(**kwargs)
+        return user_group
+
+    return _prepare_user_group
