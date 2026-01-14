@@ -1,5 +1,6 @@
 import base64
 from collections.abc import Callable
+import uuid
 import jwt
 import time
 
@@ -74,10 +75,13 @@ def mock_verify_scopes_ninja():
 
 def make_user_group(**kwargs) -> Callable[..., UserGroupBase]:
     user_group_model = get_user_group_model()
+
+    if "id" not in kwargs:
+        kwargs["id"] = uuid.uuid4()
+
     if "path" not in kwargs:
         kwargs["path"] = "/test-group"
     elif not kwargs["path"].startswith("/"):
         kwargs["path"] = f"/{kwargs['path']}"
 
     return user_group_model.objects.create(**kwargs)
-
