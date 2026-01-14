@@ -74,7 +74,7 @@ def mock_pyjwk_client(keycloak_idp):
         yield mock_fetch
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture
 def mock_verify_scopes_ninja():
     """
     Patches AuthBearer._verify_scopes, so that no real scope checking is done during tests.
