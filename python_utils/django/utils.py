@@ -3,7 +3,6 @@ import sys
 import time
 from typing import Dict, Union, Optional, IO, TypeVar
 from typing import List, Any
-from typing import Tuple
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -16,7 +15,6 @@ from django.forms import model_to_dict
 from django.utils import timezone
 
 from python_utils.db import fetch_all
-from python_utils.imports import import_optional_dependency
 
 Model_T = TypeVar('Model_T', bound=Model)
 

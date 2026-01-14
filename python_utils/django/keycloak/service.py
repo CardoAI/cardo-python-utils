@@ -6,7 +6,7 @@ from keycloak import KeycloakOpenIDConnection
 from keycloak.exceptions import KeycloakGetError
 
 
-def _get_user_group_model():
+def get_user_group_model():
     """
     Dynamically get the UserGroup model.
 
@@ -31,7 +31,7 @@ def _get_user_group_model():
 
 class KeycloakService:
     def __init__(self):
-        self._user_group_model = _get_user_group_model()
+        self._user_group_model = get_user_group_model()
         self._keycloak_admin = self._get_keycloak_admin()
 
     def sync_user_groups(self, raise_exceptions: bool = False):
@@ -189,7 +189,7 @@ class AuthServiceBase:
         for path in group_paths:
             all_group_paths.update(cls._get_all_level_paths(path))
 
-        UserGroup = _get_user_group_model()
+        UserGroup = get_user_group_model()
         user_groups = UserGroup.objects.filter(path__in=all_group_paths)
 
         # If a group is missing/has been renamed in Keycloak, sync the groups
@@ -207,7 +207,7 @@ class AuthServiceBaseAsync(AuthServiceBase):
         for path in group_paths:
             all_group_paths.update(cls._get_all_level_paths(path))
 
-        UserGroup = _get_user_group_model()
+        UserGroup = get_user_group_model()
         user_groups = UserGroup.objects.filter(path__in=all_group_paths)
 
         # If a group is missing/has been renamed in Keycloak, sync the groups
