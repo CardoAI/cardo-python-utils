@@ -6,13 +6,16 @@ from ...utils import get_keycloak_confidential_client_token
 
 class AdminAuthenticationBackend(OIDCAuthenticationBackend):
     def get_token(self, payload):
-        return get_keycloak_confidential_client_token()
+        # Instead of passing client_id and client_secret,
+        # client_assertion with service account token will be used
+        payload.pop("client_id", None)
+        payload.pop("client_secret", None)
+
+        return get_keycloak_confidential_client_token(**payload)
 
     def _get_user_data(self, claims) -> dict:
         client_roles = (
-            claims.get("resource_access", {})
-            .get(getattr(settings, "OIDC_RP_CLIENT_ID", ""), {})
-            .get("roles", [])
+            claims.get("resource_access", {}).get(getattr(settings, "OIDC_RP_CLIENT_ID", ""), {}).get("roles", [])
         )
         is_superuser = "Admin" in client_roles
 

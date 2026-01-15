@@ -31,17 +31,19 @@ def get_confidential_client_service_account_token() -> str:
     return token
 
 
-def get_keycloak_confidential_client_token() -> dict:
+def get_keycloak_confidential_client_token(**kwargs) -> dict:
     """
     Obtains token for a Keycloak confidential client with the client credentials grant,
     using a service account token for authentication.
     """
+
     response = requests.post(
         KEYCLOAK_TOKEN_ENDPOINT,
         data={
             "grant_type": KEYCLOAK_CLIENT_CREDENTIALS_GRANT_TYPE,
             "client_assertion_type": KEYCLOAK_CLIENT_ASSERTION_TYPE,
             "client_assertion": get_confidential_client_service_account_token(),
+            **kwargs,
         },
     )
     response.raise_for_status()
