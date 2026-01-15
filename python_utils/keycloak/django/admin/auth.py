@@ -17,7 +17,7 @@ class AdminAuthenticationBackend(OIDCAuthenticationBackend):
         client_roles = (
             claims.get("resource_access", {}).get(getattr(settings, "OIDC_RP_CLIENT_ID", ""), {}).get("roles", [])
         )
-        is_superuser = "Admin" in client_roles
+        is_superuser = "AdminPanel" in client_roles
 
         return {
             "username": claims.get("preferred_username"),
