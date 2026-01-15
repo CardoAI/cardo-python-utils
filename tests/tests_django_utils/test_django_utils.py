@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
-from python_utils.django.utils import record_to_dict, perform_query, get_total, get_min, get_average, get_max, \
+from python_utils.django_utils import record_to_dict, perform_query, get_total, get_min, get_average, get_max, \
     get_or_none, get_id_field_map, get_model_field_names, call_procedure, generate_file_from_buffer, \
     ids, update_record, compute_weighted_average, compute_grouped_weighted_average, \
     get_fields_config_and_values, get_model_fields_config, safe_bulk_create, \

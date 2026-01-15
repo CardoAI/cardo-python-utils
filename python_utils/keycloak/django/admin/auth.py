@@ -1,8 +1,13 @@
 from django.conf import settings
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
 
+from ...utils import get_keycloak_confidential_client_token
+
 
 class AdminAuthenticationBackend(OIDCAuthenticationBackend):
+    def get_token(self, payload):
+        return get_keycloak_confidential_client_token()
+
     def _get_user_data(self, claims) -> dict:
         client_roles = (
             claims.get("resource_access", {})
