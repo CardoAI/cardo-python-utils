@@ -80,7 +80,7 @@ def mock_verify_scopes_ninja():
     Patches AuthBearer._verify_scopes, so that no real scope checking is done during tests.
     This is done because scope checking uses route resolution, which the test client does not support.
     """
-    with patch("python_utils.django.keycloak.api.ninja.AuthBearer._verify_scopes") as mock_verify:
+    with patch("python_utils.keycloak.django.api.ninja.AuthBearer._verify_scopes") as mock_verify:
         mock_verify.return_value = None
         yield mock_verify
 
