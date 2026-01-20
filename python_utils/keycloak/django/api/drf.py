@@ -1,5 +1,5 @@
 from django.conf import settings
-from jwt.exceptions import InvalidTokenError
+from jwt.exceptions import InvalidTokenError, PyJWKClientError
 
 from rest_framework import authentication
 from rest_framework.exceptions import AuthenticationFailed
@@ -14,7 +14,7 @@ class AuthenticationBackend(authentication.TokenAuthentication):
     def authenticate_credentials(self, token: str):
         try:
             payload = decode_jwt(token, audience=self._get_audience())
-        except InvalidTokenError as e:
+        except (InvalidTokenError, PyJWKClientError) as e:
             raise AuthenticationFailed(f"Invalid token: {str(e)}") from e
 
         try:

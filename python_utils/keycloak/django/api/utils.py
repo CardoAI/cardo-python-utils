@@ -32,6 +32,7 @@ def decode_jwt(token: str, audience: Optional[str] = None) -> TokenPayload:
     Decode a JWT token using the public certificate of the Auth Server.
 
     Raises:
+        jwt.exceptions.PyJWKClientError: If there is an error fetching the signing key.
         jwt.exceptions.InvalidTokenError: If the token is invalid or cannot be decoded.
     """
     signing_key = jwks_client.get_signing_key_from_jwt(token)

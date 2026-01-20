@@ -1,7 +1,7 @@
 import logging
 from typing import Literal, Optional, Union
 
-from jwt.exceptions import InvalidTokenError
+from jwt.exceptions import InvalidTokenError, PyJWKClientError
 
 from django.conf import settings
 from django.http import HttpRequest
@@ -61,7 +61,7 @@ class AuthBearer(HttpBearer):
     def _decode_token(self, token: str) -> TokenPayload:
         try:
             return decode_jwt(token)
-        except InvalidTokenError as e:
+        except (InvalidTokenError, PyJWKClientError) as e:
             raise AuthenticationError(f"Invalid token: {str(e)}") from e
 
     def _get_username(self, payload: TokenPayload) -> str:
