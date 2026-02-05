@@ -2,9 +2,22 @@ This package provides utilities for facilitating IDP communication and multi-ten
 
 # Usage
 
-To use this package, add the following to your Django settings.py file:
 
-## For multi-tenancy
+## Environment variables to set
+
+- AWS_STORAGE_TENANT_BUCKET_NAMES
+    - A JSON dictionary where each key is the tenant name and the value is the bucket name.
+- DATABASE_CONFIG
+    - A dictionary where each key is the tenant name and the value is a dict with the datase config.
+    - If multiple 'DATABASE_CONFIG'-prefixed variables are set, they will be merged into a single dictionary. 
+- KEYCLOAK_SERVER_URL
+    - The URL of the Keycloak deployment
+- KEYCLOAK_CONFIDENTIAL_CLIENT_ID
+    - The id of the confidential client of the backend service
+
+## settings.py file
+
+### For multi-tenancy
 
 ```python3
 INSTALLED_APPS = [
@@ -60,7 +73,7 @@ STORAGES = {
 TENANT_AWARE_EXCLUDED_PATHS = ("/some/path",)
 ```
 
-## For OIDC auth
+### For OIDC auth
 
 ```python3
 from python_utils.django.admin.templates import TEMPLATE_PATH
@@ -103,11 +116,6 @@ LOGIN_REDIRECT_URL = "/admin"
 SESSION_COOKIE_AGE = 60 * 30  # 30 minutes
 SESSION_SAVE_EVERY_REQUEST = True  # Extend session on each request
 ```
-
-## Other env variables to set
-
-- KEYCLOAK_SERVER_URL - The URL of the Keycloak deployment
-
 
 ## With django-ninja
 
