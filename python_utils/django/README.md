@@ -2,18 +2,19 @@ This package provides utilities for facilitating IDP communication and multi-ten
 
 # Usage
 
-
 ## Environment variables to set
 
 - AWS_STORAGE_TENANT_BUCKET_NAMES
-    - A JSON dictionary where each key is the tenant name and the value is the bucket name.
+  - A JSON dictionary where each key is the tenant name and the value is the bucket name.
 - DATABASE_CONFIG
-    - A dictionary where each key is the tenant name and the value is a dict with the datase config.
-    - If multiple 'DATABASE_CONFIG'-prefixed variables are set, they will be merged into a single dictionary. 
+  - A JSON dictionary where each key is the tenant name and the value is a dict with the datase config.
+  - If multiple 'DATABASE_CONFIG'-prefixed variables are set, they will be merged into a single dictionary.
 - KEYCLOAK_SERVER_URL
-    - The URL of the Keycloak deployment
+  - The URL of the Keycloak deployment
 - KEYCLOAK_CONFIDENTIAL_CLIENT_ID
-    - The id of the confidential client of the backend service
+  - The id of the confidential client of the backend service
+- KEYCLOAK_CONFIDENTIAL_CLIENT_SERVICE_ACCOUNT_TOKEN_FILE_PATHS
+  - A JSON dictionary where each key is the tenant name and the value is the file path of the service account token for the confidential client of that tenant
 
 ## settings.py file
 
