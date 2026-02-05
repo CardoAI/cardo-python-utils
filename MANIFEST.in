@@ -1,4 +1,5 @@
 include LICENSE
 include README.rst
 include python_utils/keycloak/django/admin/user_groups_changelist.html
+include python_utils/multi_tenancy/README.md
 recursive-exclude tests *

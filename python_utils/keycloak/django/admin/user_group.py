@@ -134,7 +134,7 @@ class UserGroupAdminBase(admin.ModelAdmin, metaclass=UserGroupAdminMetaclass):
         ]
 
     @staticmethod
-    def sync_groups_with_keycloak(request):  # noqa
+    def sync_groups_with_keycloak(request):
         """Syncs user groups with Keycloak"""
 
         try:
