@@ -4,9 +4,25 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from jwt import decode, PyJWKClient
 
-jwks_client = PyJWKClient(getattr(settings, "JWKS_URL", ""))
+from django.oidc_settings import get_oidc_op_jwks_endpoint
+
+from ..tenant_context import TenantContext
+
+JWKS_CLIENTS = {}  # Cache for PyJWKClient instances
+
+
+def get_jwks_client():
+    tenant = TenantContext.get()
+
+    if tenant not in JWKS_CLIENTS:
+        jwks_client = PyJWKClient(get_oidc_op_jwks_endpoint())
+        JWKS_CLIENTS[tenant] = jwks_client
+
+    return JWKS_CLIENTS[tenant]
+
 
 User = get_user_model()
+
 
 class TokenPayload(TypedDict, total=False):
     exp: int
@@ -35,6 +51,7 @@ def decode_jwt(token: str, audience: Optional[str] = None) -> TokenPayload:
         jwt.exceptions.PyJWKClientError: If there is an error fetching the signing key.
         jwt.exceptions.InvalidTokenError: If the token is invalid or cannot be decoded.
     """
+    jwks_client = get_jwks_client()
     signing_key = jwks_client.get_signing_key_from_jwt(token)
 
     if audience is None:

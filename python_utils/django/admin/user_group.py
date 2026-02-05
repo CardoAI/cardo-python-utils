@@ -5,7 +5,7 @@ from django.db.models import Count
 from django.urls import path
 from django.shortcuts import redirect
 
-from ..service import KeycloakService
+from ..auth.service import KeycloakService
 
 
 class UserGroupAdminMetaclass(forms.MediaDefiningClass):

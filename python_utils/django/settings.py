@@ -1,7 +1,7 @@
 from django.conf import settings
 
-TENANT_DATABASES = set(settings.DATABASES.keys()) - {"default"}
 TENANT_KEY = "tenant"
+TENANT_DATABASES = set(settings.DATABASES.keys()) - {"default"}
 
 TENANT_AWARE_EXCLUDED_PATHS = getattr(settings, "TENANT_AWARE_EXCLUDED_PATHS", ())
 TENANT_AWARE_EXCLUDED_PATHS = (

@@ -1,17 +1,48 @@
 from django.conf import settings
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
 
-from ...utils import get_keycloak_confidential_client_token
+from ..oidc_settings import (
+    get_oidc_confidential_client_token,
+    get_oidc_op_token_endpoint,
+    get_oidc_op_user_endpoint,
+    get_oidc_op_jwks_endpoint,
+)
 
 
 class AdminAuthenticationBackend(OIDCAuthenticationBackend):
+    """
+    Tenant-aware OIDC authentication backend for Django admin.
+
+    This backend dynamically resolves OIDC endpoints based on the current
+    tenant context, allowing each tenant to authenticate against their
+    own Keycloak realm.
+    """
+
+    @property
+    def OIDC_OP_TOKEN_ENDPOINT(self):
+        """Dynamically get the token endpoint for the current tenant."""
+
+        return get_oidc_op_token_endpoint()
+
+    @property
+    def OIDC_OP_USER_ENDPOINT(self):
+        """Dynamically get the userinfo endpoint for the current tenant."""
+
+        return get_oidc_op_user_endpoint()
+
+    @property
+    def OIDC_OP_JWKS_ENDPOINT(self):
+        """Dynamically get the JWKS endpoint for the current tenant."""
+
+        return get_oidc_op_jwks_endpoint()
+
     def get_token(self, payload):
         # Instead of passing client_id and client_secret,
         # client_assertion with service account token will be used
         payload.pop("client_id", None)
         payload.pop("client_secret", None)
 
-        return get_keycloak_confidential_client_token(**payload)
+        return get_oidc_confidential_client_token(**payload)
 
     def _get_user_data(self, claims) -> dict:
         client_roles = (

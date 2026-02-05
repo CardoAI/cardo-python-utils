@@ -98,18 +98,11 @@ class TenantAwareHttpMiddleware:
 
         # Need at least 3 parts: <app>.<tenant>.<domain>
         if len(parts) >= 3:
-            tenant = self._normalize_tenant(parts[1])
+            tenant = parts[1].replace("-internal", "")
             logger.debug(f"Tenant '{tenant}' extracted from subdomain: {host}")
             return tenant
 
         return None
-
-    @staticmethod
-    def _normalize_tenant(tenant: str) -> str:
-        # Remove -internal suffix if present
-        if tenant.endswith("-internal"):
-            return tenant[: -len("-internal")]
-        return tenant
 
     @staticmethod
     def _is_valid_tenant(tenant: str) -> bool:

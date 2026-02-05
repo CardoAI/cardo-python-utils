@@ -5,12 +5,12 @@ from keycloak import KeycloakAdmin
 from keycloak import KeycloakOpenIDConnection
 from keycloak.exceptions import KeycloakGetError
 
-from ..utils import (
+from ..oidc_settings import (
     KEYCLOAK_SERVER_URL,
-    KEYCLOAK_REALM,
     KEYCLOAK_CONFIDENTIAL_CLIENT_ID,
-    get_keycloak_confidential_client_token,
+    get_oidc_confidential_client_token,
 )
+from ..tenant_context import TenantContext
 
 
 def get_user_group_model():
@@ -67,12 +67,14 @@ class KeycloakService:
             deleted_groups.delete()
 
     def _get_keycloak_admin(self):
+        tenant = TenantContext.get()
+
         keycloak_connection = KeycloakOpenIDConnection(
             server_url=KEYCLOAK_SERVER_URL,
-            realm_name=KEYCLOAK_REALM,
-            user_realm_name=KEYCLOAK_REALM,
+            realm_name=tenant,
+            user_realm_name=tenant,
             client_id=KEYCLOAK_CONFIDENTIAL_CLIENT_ID,
-            token=get_keycloak_confidential_client_token(),
+            token=get_oidc_confidential_client_token(),
             verify=True,
         )
         return KeycloakAdmin(connection=keycloak_connection)
