@@ -18,23 +18,18 @@ class AdminAuthenticationBackend(OIDCAuthenticationBackend):
     own Keycloak realm.
     """
 
-    @property
-    def OIDC_OP_TOKEN_ENDPOINT(self):
-        """Dynamically get the token endpoint for the current tenant."""
+    def get_settings(self, attr, *args):
+        if attr == "OIDC_OP_TOKEN_ENDPOINT":
+            return get_oidc_op_token_endpoint()
+        if attr == "OIDC_OP_USER_ENDPOINT":
+            return get_oidc_op_user_endpoint()
+        if attr == "OIDC_OP_JWKS_ENDPOINT":
+            return get_oidc_op_jwks_endpoint()
+        if attr == "OIDC_RP_CLIENT_SECRET":
+            # The explicit return of None is needed to prevent the parent class from raising an error
+            return None
 
-        return get_oidc_op_token_endpoint()
-
-    @property
-    def OIDC_OP_USER_ENDPOINT(self):
-        """Dynamically get the userinfo endpoint for the current tenant."""
-
-        return get_oidc_op_user_endpoint()
-
-    @property
-    def OIDC_OP_JWKS_ENDPOINT(self):
-        """Dynamically get the JWKS endpoint for the current tenant."""
-
-        return get_oidc_op_jwks_endpoint()
+        return super().get_settings(attr, *args)
 
     def get_token(self, payload):
         # Instead of passing client_id and client_secret,

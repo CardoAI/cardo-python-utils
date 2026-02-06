@@ -111,13 +111,33 @@ KEYCLOAK_USER_GROUP_MODEL = "myapp.UserGroup"
 KEYCLOAK_CONFIDENTIAL_CLIENT_ID = os.getenv("KEYCLOAK_CONFIDENTIAL_CLIENT_ID", f"{JWT_AUDIENCE}_confidential")
 
 OIDC_RP_CLIENT_ID = KEYCLOAK_CONFIDENTIAL_CLIENT_ID
-OIDC_RP_CLIENT_SECRET = None
 OIDC_RP_SIGN_ALGO = "RS256"
 OIDC_CREATE_USER = True
+OIDC_AUTHENTICATE_CLASS = "python_utils.django.admin.views.TenantAwareOIDCAuthenticationRequestView"
 
 LOGIN_REDIRECT_URL = "/admin"
 SESSION_COOKIE_AGE = 60 * 30  # 30 minutes
 SESSION_SAVE_EVERY_REQUEST = True  # Extend session on each request
+```
+
+## urls.py file
+
+The views of the `mozilla-django-oidc` package need to be exposed as well, for the OIDC auth:
+
+```python3
+urlpatterns.append(path("oidc/", include("mozilla_django_oidc.urls")))
+```
+
+## admin.py file
+
+The Django Admin Panel needs to be configured to automatically redirect to the OIDC login page:
+
+```python3
+from python_utils.django.admin.auth import has_admin_site_permission
+from python_utils.django.admin.views import TenantAwareOIDCAuthenticationRequestView
+
+admin.site.login = TenantAwareOIDCAuthenticationRequestView.as_view()
+admin.site.has_permission = has_admin_site_permission
 ```
 
 ## With django-ninja

@@ -8,16 +8,29 @@ import json
 import os
 import requests
 
+from django.conf import settings
 from .tenant_context import TenantContext
 
 
 KEYCLOAK_SERVER_URL = os.getenv("KEYCLOAK_SERVER_URL", None)
 KEYCLOAK_CONFIDENTIAL_CLIENT_ID = os.getenv("KEYCLOAK_CONFIDENTIAL_CLIENT_ID", None)
+
+OIDC_CLIENT_AUTH_METHOD = getattr(settings, "OIDC_CLIENT_AUTH_METHOD", "client_assertion")
+if OIDC_CLIENT_AUTH_METHOD not in ("client_assertion", "client_secret"):
+    raise ValueError(
+        f"Invalid OIDC_CLIENT_AUTH_METHOD: {OIDC_CLIENT_AUTH_METHOD}. "
+        f"Supported methods are 'client_assertion' and 'client_secret'."
+    )
+
 KEYCLOAK_CONFIDENTIAL_CLIENT_SERVICE_ACCOUNT_TOKEN_FILE_PATHS: dict[str, str] = json.loads(
     os.getenv("KEYCLOAK_CONFIDENTIAL_CLIENT_SERVICE_ACCOUNT_TOKEN_FILE_PATHS", "{}")
 )
 KEYCLOAK_CLIENT_CREDENTIALS_GRANT_TYPE = "client_credentials"
 KEYCLOAK_CLIENT_ASSERTION_TYPE = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+
+KEYCLOAK_CONFIDENTIAL_CLIENT_SECRETS: dict[str, str] = json.loads(
+    os.getenv("KEYCLOAK_CONFIDENTIAL_CLIENT_SECRETS", "{}")
+)
 
 
 def get_oidc_op_base_url() -> str:
@@ -65,20 +78,38 @@ def get_confidential_client_service_account_token() -> str:
     return token
 
 
+def get_confidential_client_secret() -> str:
+    """
+    Retrieves the Keycloak confidential client secret for the current tenant.
+    """
+    tenant = TenantContext.get()
+    client_secret = KEYCLOAK_CONFIDENTIAL_CLIENT_SECRETS.get(tenant)
+    if not client_secret:
+        raise ValueError(f"Keycloak confidential client secret for tenant {tenant} not found.")
+
+    return client_secret
+
+
 def get_oidc_confidential_client_token(**kwargs) -> dict:
     """
     Obtains token for an OIDC confidential client with the client credentials grant,
     using a service account token for authentication.
     """
 
+    data = {
+        "grant_type": KEYCLOAK_CLIENT_CREDENTIALS_GRANT_TYPE,
+        **kwargs,
+    }
+    if OIDC_CLIENT_AUTH_METHOD == "client_secret":
+        data["client_id"] = KEYCLOAK_CONFIDENTIAL_CLIENT_ID
+        data["client_secret"] = get_confidential_client_secret()
+    else:
+        data["client_assertion_type"] = KEYCLOAK_CLIENT_ASSERTION_TYPE
+        data["client_assertion"] = get_confidential_client_service_account_token()
+
     response = requests.post(
         get_oidc_op_token_endpoint(),
-        data={
-            "grant_type": KEYCLOAK_CLIENT_CREDENTIALS_GRANT_TYPE,
-            "client_assertion_type": KEYCLOAK_CLIENT_ASSERTION_TYPE,
-            "client_assertion": get_confidential_client_service_account_token(),
-            **kwargs,
-        },
+        data=data,
     )
     response.raise_for_status()
 
