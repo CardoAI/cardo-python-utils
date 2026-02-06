@@ -4,7 +4,7 @@ from contextlib import ContextDecorator
 from threading import local
 from typing import Optional
 
-from .settings import TENANT_DATABASES
+from .settings import DATABASES
 
 logger = logging.getLogger(__name__)
 thread_namespace = local()
@@ -75,7 +75,7 @@ class TenantContext(ContextDecorator):
                 logger.info("Tenant context already set to %s", tenant)
                 return
         
-        if tenant not in TENANT_DATABASES:
+        if tenant not in DATABASES:
             logger.error(f"Tenant '{tenant}' not found in DATABASES settings.")
             return sys.exit(1)
 

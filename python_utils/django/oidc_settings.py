@@ -12,15 +12,9 @@ from .tenant_context import TenantContext
 
 
 KEYCLOAK_SERVER_URL = os.getenv("KEYCLOAK_SERVER_URL", None)
-if not KEYCLOAK_SERVER_URL:
-    raise ValueError("KEYCLOAK_SERVER_URL env variable is not set.")
-
 KEYCLOAK_CONFIDENTIAL_CLIENT_ID = os.getenv("KEYCLOAK_CONFIDENTIAL_CLIENT_ID", None)
-if not KEYCLOAK_CONFIDENTIAL_CLIENT_ID:
-    raise ValueError("KEYCLOAK_CONFIDENTIAL_CLIENT_ID env variable is not set.")
-
 KEYCLOAK_CONFIDENTIAL_CLIENT_SERVICE_ACCOUNT_TOKEN_FILE_PATHS: dict[str, str] = json.loads(
-    os.getenv("KEYCLOAK_CONFIDENTIAL_CLIENT_SERVICE_ACCOUNT_TOKEN_FILE_PATHS")
+    os.getenv("KEYCLOAK_CONFIDENTIAL_CLIENT_SERVICE_ACCOUNT_TOKEN_FILE_PATHS", "{}")
 )
 KEYCLOAK_CLIENT_CREDENTIALS_GRANT_TYPE = "client_credentials"
 KEYCLOAK_CLIENT_ASSERTION_TYPE = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"

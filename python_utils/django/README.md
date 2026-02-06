@@ -5,6 +5,7 @@ This package provides utilities for facilitating IDP communication and multi-ten
 ## Environment variables to set
 
 - AWS_STORAGE_TENANT_BUCKET_NAMES
+  - _This variable should be set if separate tenant buckets are needed._
   - A JSON dictionary where each key is the tenant name and the value is the bucket name.
 - DATABASE_CONFIG
   - A JSON dictionary where each key is the tenant name and the value is a dict with the datase config.
@@ -62,7 +63,8 @@ CACHES = {
     }
 }
 
-# If using Django Storages with S3, configure the storage backends as follows:
+# If using Django Storages with S3, and separate tenant buckets are needed, 
+# configure the storage backends as follows:
 STORAGES = {
     "default": {
         "BACKEND": "python_utils.django.storage.TenantAwarePrivateS3Storage",

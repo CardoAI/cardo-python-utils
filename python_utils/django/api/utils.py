@@ -4,8 +4,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from jwt import decode, PyJWKClient
 
-from django.oidc_settings import get_oidc_op_jwks_endpoint
-
+from ..oidc_settings import get_oidc_op_jwks_endpoint
 from ..tenant_context import TenantContext
 
 JWKS_CLIENTS = {}  # Cache for PyJWKClient instances

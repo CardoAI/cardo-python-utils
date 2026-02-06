@@ -5,7 +5,7 @@ from django.conf import settings
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpResponse
 
-from ..settings import DEVELOPMENT_TENANT, TENANT_AWARE_EXCLUDED_PATHS, TENANT_DATABASES
+from ..settings import DEVELOPMENT_TENANT, TENANT_AWARE_EXCLUDED_PATHS
 from ..tenant_context import TenantContext
 
 logger = logging.getLogger(__name__)
@@ -51,9 +51,6 @@ class TenantAwareHttpMiddleware:
         if self._is_excluded_path(request.path):
             return self.get_response(request)
 
-        if TenantContext.is_set():
-            raise Exception("Tenant context already set")
-
         # In DEBUG mode, use DEVELOPMENT_TENANT directly
         # In production, extract tenant from subdomain
         if settings.DEBUG:
@@ -63,10 +60,6 @@ class TenantAwareHttpMiddleware:
             tenant = self._get_tenant_from_subdomain(request)
             if tenant is None:
                 raise Exception(f"Could not determine tenant from subdomain. Host: {request.get_host()}")
-
-        # Validate tenant exists in configured databases
-        if not self._is_valid_tenant(tenant):
-            raise Exception(f"Unknown tenant: {tenant}")
 
         # Call the next middleware in the chain until the response is returned.
         # After that, the database alias is removed from the thread local variable.
@@ -94,6 +87,11 @@ class TenantAwareHttpMiddleware:
         - <app>.tenant-internal.domain.com -> tenant (strips -internal suffix)
         """
         host = request.get_host().split(":")[0]  # Remove port if present
+
+        if host == "testserver":
+            logger.debug("Using 'default' tenant for testserver host.")
+            return "default"
+
         parts = host.split(".")
 
         # Need at least 3 parts: <app>.<tenant>.<domain>
@@ -103,11 +101,3 @@ class TenantAwareHttpMiddleware:
             return tenant
 
         return None
-
-    @staticmethod
-    def _is_valid_tenant(tenant: str) -> bool:
-        """
-        Validate that the tenant exists in configured databases.
-        Skip 'default' as it's typically a placeholder.
-        """
-        return tenant in TENANT_DATABASES
