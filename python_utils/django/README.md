@@ -35,11 +35,17 @@ MIDDLEWARE = [
 
 # Include the database configuration for each tenant in the DATABASES setting.
 # You can use the get_database_configs() function from python_utils.django.db.utils as a helper.
-DATABASES = {
-    'tenant1': { ... },
-    'tenant2': { ... },
-    ...
-}
+from python_utils.django.db.utils import get_database_configs
+
+for tenant, tenant_db_config in get_database_configs().items():
+    DATABASES[tenant] = {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": tenant_db_config["name"],
+        "USER": tenant_db_config["user"],
+        "PASSWORD": tenant_db_config["password"],
+        "HOST": tenant_db_config["host"],
+        "PORT": tenant_db_config.get("port", 5432),
+    }
 
 # If you want to override the database alias to use for local development (when DEBUG is True).
 # By default, the first database defined in DATABASES is used.
