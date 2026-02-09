@@ -1,22 +1,27 @@
 import logging
 import sys
 from contextlib import ContextDecorator
-from threading import local
+from contextvars import ContextVar
 from typing import Optional
 
 from .settings import DATABASES
 
 logger = logging.getLogger(__name__)
-thread_namespace = local()
+
+# ContextVar propagates automatically to async threads via sync_to_async
+_tenant_var: ContextVar[Optional[str]] = ContextVar('tenant', default=None)
 
 
 class TenantContext(ContextDecorator):
     """
     Context manager that sets the current tenant.
     This class can be used in several ways:
-    1. As a context manager:
+    1. As a context manager (sync and async):
         with TenantContext('tenant'):
             # do something
+        
+        async with TenantContext('tenant'):
+            # do something async
 
     2. As a decorator:
         @TenantContext('tenant')
@@ -33,23 +38,32 @@ class TenantContext(ContextDecorator):
 
     def __init__(self, tenant: str):
         self.tenant = tenant
+        self._token = None
 
     def __enter__(self):
-        TenantContext.set(self.tenant)
+        self._token = TenantContext.set(self.tenant)
+        return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        TenantContext.clear()
+        TenantContext.clear(self._token)
+
+    async def __aenter__(self):
+        self._token = TenantContext.set(self.tenant)
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        TenantContext.clear(self._token)
 
     @staticmethod
     def is_set() -> bool:
-        return hasattr(thread_namespace, TenantContext.field_name)
+        return _tenant_var.get() is not None
 
     @staticmethod
     def get() -> Optional[str]:
-        try:
-            return getattr(thread_namespace, TenantContext.field_name)
-        except AttributeError as e:
-            raise RuntimeError("Tenant context is not set.") from e
+        tenant = _tenant_var.get()
+        if tenant is None:
+            raise RuntimeError("Tenant context is not set.")
+        return tenant
 
     @staticmethod
     def set(tenant):
@@ -66,24 +80,23 @@ class TenantContext(ContextDecorator):
                 logger.error("ERROR: TENANT CONTEXT ALREADY SET")
                 logger.error(f"Current tenant: {TenantContext.get()}, new tenant: {tenant}")
                 return sys.exit(1)
-
             else:
-                # Normally in a request-response cycle, or a single task, the
-                # tenant context is set only once. But there is an exception
-                # for the migrate command, which sets the tenant context
-                # multiple times to the same value.
-                logger.info("Tenant context already set to %s", tenant)
-                return
-        
+                # If the tenant is already set to the same value, we do nothing and return None.
+                return None
+
         if tenant not in DATABASES:
             logger.error(f"Tenant '{tenant}' not found in DATABASES settings.")
             return sys.exit(1)
 
-        setattr(thread_namespace, TenantContext.field_name, tenant)
+        token = _tenant_var.set(tenant)
         logger.info(f"Tenant context set to {tenant}")
+        return token
 
     @staticmethod
-    def clear():
+    def clear(token=None):
         if TenantContext.is_set():
-            delattr(thread_namespace, TenantContext.field_name)
+            if token is not None:
+                _tenant_var.reset(token)
+            else:
+                _tenant_var.set(None)
             logger.info("Tenant context cleared")

@@ -46,9 +46,7 @@ DATABASES = {
 DEVELOPMENT_TENANT = "development"
 
 # This is required to use the tenant context when routing database queries
-DATABASE_ROUTERS = [
-    "python_utils.django.db.routers.TenantAwareRouter"
-]
+DATABASE_ROUTERS = ["python_utils.django.db.routers.TenantAwareRouter"]
 
 # If using celery, set the task class to TenantAwareTask:
 CELERY_TASK_CLS = "python_utils.django.celery.TenantAwareTask"
@@ -143,3 +141,38 @@ admin.site.has_permission = has_admin_site_permission
 ## With django-ninja
 
 If using `django-ninja`, apart from the settings configured above, auth utils are provided in the django/api/ninja.py module.
+
+## Testing
+
+In order for tests to work, create the following autouse fixtures:
+
+```python3
+import pytest
+
+from python_utils.django.tenant_context import TenantContext
+
+# Add this, if the test utils of the package are needed
+pytest_plugins = ["python_utils.django.tests"]
+
+
+@pytest.fixture(scope="session", autouse=True)
+def test_database() -> str:
+    return "default"
+
+
+@pytest.fixture(scope="session", autouse=True)
+def set_tenant_context_session(test_database):
+    """Set tenant context for the entire test session."""
+    TenantContext.set(test_database)
+    yield
+    TenantContext.clear()
+
+
+@pytest.fixture(autouse=True)
+def set_tenant_context(set_tenant_context_session, test_database):
+    """Ensure tenant context is set for each test (depends on session fixture)."""
+    # Re-set in case it was cleared between tests
+    if not TenantContext.is_set():
+        TenantContext.set(test_database)
+    yield
+```
