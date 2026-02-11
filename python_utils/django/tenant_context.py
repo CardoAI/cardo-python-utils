@@ -1,5 +1,4 @@
 import logging
-import sys
 from contextlib import ContextDecorator
 from contextvars import ContextVar
 from typing import Optional
@@ -9,7 +8,7 @@ from .settings import DATABASES
 logger = logging.getLogger(__name__)
 
 # ContextVar propagates automatically to async threads via sync_to_async
-_tenant_var: ContextVar[Optional[str]] = ContextVar('tenant', default=None)
+_tenant_var: ContextVar[Optional[str]] = ContextVar("tenant", default=None)
 
 
 class TenantContext(ContextDecorator):
@@ -19,7 +18,7 @@ class TenantContext(ContextDecorator):
     1. As a context manager (sync and async):
         with TenantContext('tenant'):
             # do something
-        
+
         async with TenantContext('tenant'):
             # do something async
 
@@ -77,16 +76,16 @@ class TenantContext(ContextDecorator):
             # The same applies to a single task, it is not allowed to set the
             # tenant in the same task to a different value.
             if TenantContext.get() != tenant:
-                logger.error("ERROR: TENANT CONTEXT ALREADY SET")
-                logger.error(f"Current tenant: {TenantContext.get()}, new tenant: {tenant}")
-                return sys.exit(1)
+                raise RuntimeError(
+                    f"Tenant context already set to '{TenantContext.get()}', "
+                    f"cannot change to '{tenant}' within the same request/task lifecycle."
+                )
             else:
                 # If the tenant is already set to the same value, we do nothing and return None.
                 return None
 
         if tenant not in DATABASES:
-            logger.error(f"Tenant '{tenant}' not found in DATABASES settings.")
-            return sys.exit(1)
+            raise ValueError(f"Tenant '{tenant}' not found in DATABASES settings.")
 
         token = _tenant_var.set(tenant)
         logger.info(f"Tenant context set to {tenant}")
