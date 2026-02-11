@@ -20,9 +20,6 @@ def get_jwks_client():
     return JWKS_CLIENTS[tenant]
 
 
-User = get_user_model()
-
-
 class TokenPayload(TypedDict, total=False):
     exp: int
     iat: int
@@ -75,7 +72,7 @@ def get_user_data_from_payload(payload: TokenPayload) -> dict:
         "is_staff": payload.get("is_staff", False),
     }
 
-    if hasattr(User, "is_demo"):
+    if hasattr(get_user_model(), "is_demo"):
         user_data["is_demo"] = payload.get("is_demo", False)
 
     return user_data
@@ -96,6 +93,7 @@ def create_or_update_user(username: str, payload: TokenPayload):
     """
     Create or update a user based on the JWT payload.
     """
+    User = get_user_model()
     user_data = get_user_data_from_payload(payload)
 
     user = User.objects.filter(username=username).first()
@@ -114,6 +112,7 @@ def create_or_update_user(username: str, payload: TokenPayload):
 
 
 async def acreate_or_update_user(username: str, payload: TokenPayload):
+    User = get_user_model()
     user_data = get_user_data_from_payload(payload)
 
     user = await User.objects.filter(username=username).afirst()
