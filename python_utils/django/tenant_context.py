@@ -3,7 +3,7 @@ from contextlib import ContextDecorator
 from contextvars import ContextVar
 from typing import Optional
 
-from .settings import DATABASES
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +84,7 @@ class TenantContext(ContextDecorator):
                 # If the tenant is already set to the same value, we do nothing and return None.
                 return None
 
-        if tenant not in DATABASES:
+        if tenant not in settings.DATABASES:
             raise ValueError(f"Tenant '{tenant}' not found in DATABASES settings.")
 
         token = _tenant_var.set(tenant)
