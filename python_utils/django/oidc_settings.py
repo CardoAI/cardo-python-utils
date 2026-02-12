@@ -32,11 +32,23 @@ KEYCLOAK_CONFIDENTIAL_CLIENT_SECRETS: dict[str, str] = json.loads(
     os.getenv("KEYCLOAK_CONFIDENTIAL_CLIENT_SECRETS", "{}")
 )
 
+TENANT_REALM_MAPPING: dict[str, str] = getattr(
+    settings, "TENANT_REALM_MAPPING", json.loads(os.getenv("TENANT_REALM_MAPPING", "{}"))
+)
+
+
+def get_realm_for_tenant(tenant: str) -> str:
+    """
+    Get the Keycloak realm name for a given tenant.
+    By default, we assume the realm name is the same as the tenant name.
+    """
+    return TENANT_REALM_MAPPING.get(tenant, tenant)
+
 
 def get_oidc_op_base_url() -> str:
     """Get the base URL for the OIDC provider (Keycloak realm URL)."""
 
-    realm = TenantContext.get()
+    realm = get_realm_for_tenant(TenantContext.get())
     return f"{KEYCLOAK_SERVER_URL}/realms/{realm}"
 
 
