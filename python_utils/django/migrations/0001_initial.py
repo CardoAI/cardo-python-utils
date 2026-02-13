@@ -140,7 +140,12 @@ class Migration(migrations.Migration):
                     ],
                 ),
             ],
-            database_operations=[],
+            database_operations=[
+                migrations.RunSQL(
+                    sql="ALTER TABLE IF EXISTS auth_user RENAME TO idp_user_user;",
+                    reverse_sql="ALTER TABLE IF EXISTS idp_user_user RENAME TO auth_user;",
+                ),
+            ],
         ),
         migrations.RunSQL(
             sql="DROP TABLE IF EXISTS idp_user_userrole CASCADE;",
