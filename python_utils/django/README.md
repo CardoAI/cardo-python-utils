@@ -124,6 +124,11 @@ OIDC_AUTHENTICATE_CLASS = "python_utils.django.admin.views.TenantAwareOIDCAuthen
 LOGIN_REDIRECT_URL = "/admin"
 SESSION_COOKIE_AGE = 60 * 30  # 30 minutes
 SESSION_SAVE_EVERY_REQUEST = True  # Extend session on each request
+
+# If using django-easy-audit
+
+from python_utils.django.db.alias import DynamicDatabaseAlias
+DJANGO_EASY_AUDIT_DATABASE_ALIAS = DynamicDatabaseAlias()
 ```
 
 ## urls.py file
