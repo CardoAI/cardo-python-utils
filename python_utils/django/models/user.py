@@ -20,6 +20,3 @@ class User(AbstractUser):
         related_name="idp_user_set",
         related_query_name="user",
     )
-
-    class Meta:
-        db_table = "idp_user_user"

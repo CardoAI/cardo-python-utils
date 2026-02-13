@@ -33,6 +33,8 @@ MIDDLEWARE = [
     ...
 ]
 
+AUTH_USER_MODEL = "idp_user.User"
+
 # Include the database configuration for each tenant in the DATABASES setting.
 # You can use the get_database_configs() function from python_utils.django.db.utils as a helper.
 from python_utils.django.db.utils import get_database_configs
