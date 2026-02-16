@@ -76,16 +76,16 @@ def get_confidential_client_service_account_token() -> str:
     """
     Reads the Keycloak confidential client service account token for the current tenant from a file.
     """
-    tenant = TenantContext.get()
-    token_file_path = KEYCLOAK_CONFIDENTIAL_CLIENT_SERVICE_ACCOUNT_TOKEN_FILE_PATHS.get(tenant)
+    realm = get_realm_for_tenant(TenantContext.get())
+    token_file_path = KEYCLOAK_CONFIDENTIAL_CLIENT_SERVICE_ACCOUNT_TOKEN_FILE_PATHS.get(realm)
     if not token_file_path or not os.path.isfile(token_file_path):
-        raise FileNotFoundError(f"Keycloak service account token file for tenant {tenant} not found: {token_file_path}")
+        raise FileNotFoundError(f"Keycloak service account token file for tenant {realm} not found: {token_file_path}")
 
     with open(token_file_path, "r") as f:
         token = f.read().strip()
 
     if not token:
-        raise ValueError(f"Keycloak service account token for tenant {tenant} is empty.")
+        raise ValueError(f"Keycloak service account token for tenant {realm} is empty.")
 
     return token
 
@@ -94,10 +94,10 @@ def get_confidential_client_secret() -> str:
     """
     Retrieves the Keycloak confidential client secret for the current tenant.
     """
-    tenant = TenantContext.get()
-    client_secret = KEYCLOAK_CONFIDENTIAL_CLIENT_SECRETS.get(tenant)
+    realm = get_realm_for_tenant(TenantContext.get())
+    client_secret = KEYCLOAK_CONFIDENTIAL_CLIENT_SECRETS.get(realm)
     if not client_secret:
-        raise ValueError(f"Keycloak confidential client secret for tenant {tenant} not found.")
+        raise ValueError(f"Keycloak confidential client secret for tenant {realm} not found.")
 
     return client_secret
 
