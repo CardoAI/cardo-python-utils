@@ -155,6 +155,30 @@ admin.site.has_permission = has_admin_site_permission
 
 If using `django-ninja`, apart from the settings configured above, auth utils are provided in the django/api/ninja.py module.
 
+## Atomic Transactions
+
+Django's `transaction.atomic` uses the default database. To make it tenant-aware, use `tenant_atomic`
+
+```python3
+from python_utils.django.db.transaction import tenant_atomic
+
+@tenant_atomic
+def my_function():
+    ...
+```
+
+## Django Shell
+
+This library overrides the shell command of Django, so that it requires the `tenant` arg. 
+This way, the shell is automatically initialized with the context set to the tenant. 
+
+```bash
+./manage.py shell --tenant=tenant1
+
+Starting shell for tenant: -tenant=tenant
+>>>
+```
+
 ## Testing
 
 In order for tests to work, create the following autouse fixtures:
