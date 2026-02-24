@@ -157,14 +157,17 @@ If using `django-ninja`, apart from the settings configured above, auth utils ar
 
 ## Atomic Transactions
 
-Django's `transaction.atomic` uses the default database. To make it tenant-aware, use `tenant_atomic`
+Django's `transaction.atomic` uses the default database. To make it tenant-aware, use `tenant_atomic`.
+If `transaction.on_commit` is used, make sure to pass the tenant as DB alias as well:
 
 ```python3
 from python_utils.django.db.transaction import tenant_atomic
 
 @tenant_atomic
 def my_function():
-    ...
+    # Some logic
+
+    transaction.on_commit(do_smth, using=TenantContext.get())
 ```
 
 ## Django Shell

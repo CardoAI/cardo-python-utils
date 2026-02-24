@@ -27,8 +27,49 @@ class TenantAwareTask(TaskClass):
 
     once = {"graceful": True, "unlock_before_run": False}
 
+    def apply(
+        self,
+        args=None,
+        kwargs=None,
+        link=None,
+        link_error=None,
+        task_id=None,
+        retries=None,
+        throw=None,
+        logfile=None,
+        loglevel=None,
+        headers=None,
+        **options,
+    ):
+        """Pass the tenant name from the context in the kwargs."""
+
+        if kwargs is None:
+            kwargs = {}
+
+        if TENANT_KEY not in kwargs:
+            tenant = TenantContext.get()
+            kwargs[TENANT_KEY] = tenant
+
+        return super().apply(
+            args, kwargs, link, link_error, task_id, retries, throw, logfile, loglevel, headers, **options
+        )
+
+    def apply_async(
+        self, args=None, kwargs=None, task_id=None, producer=None, link=None, link_error=None, shadow=None, **options
+    ):
+        """Pass the tenant name from the context in the kwargs."""
+
+        if kwargs is None:
+            kwargs = {}
+
+        if TENANT_KEY not in kwargs:
+            tenant = TenantContext.get()
+            kwargs[TENANT_KEY] = tenant
+
+        return super().apply_async(args, kwargs, task_id, producer, link, link_error, shadow, **options)
+
     def __call__(self, *args, **kwargs):
-        """Override the __call__ method to set the tenant name in the thread namespace."""
+        """Use the tenant name from the kwargs to update the context."""
 
         # Only clear the lock before the task's execution if the
         # "unlock_before_run" option is True
@@ -43,7 +84,8 @@ class TenantAwareTask(TaskClass):
         return self.run(*args, **kwargs)
 
     def after_return(self, status, retval, task_id, args, kwargs, einfo):
-        """Clear the tenant from the thread namespace after the task has returned."""
+        """Clear the tenant from the context after the task has returned."""
+
         TenantContext.clear()
         super().after_return(status, retval, task_id, args, kwargs, einfo)
 
@@ -67,7 +109,7 @@ class TenantAwareTask(TaskClass):
         tenant_kwarg = {TENANT_KEY: tenant}
         task_call_args = super()._get_call_args(args, _kwargs)
 
-        # Add the tenant kwarg back to the return value 
+        # Add the tenant kwarg back to the return value
         # since this value is being used to create the key for the lock.
         # We want to lock the task for the tenant that is running it.
         return task_call_args | tenant_kwarg
