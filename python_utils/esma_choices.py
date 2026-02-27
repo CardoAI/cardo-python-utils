@@ -42,6 +42,9 @@ class FinancialCreditAssetFinancingPurposeChoices(ChoiceEnum):
     OTHV = 16, "Other Vehicle"
     EQUP = 17, "Equipment"
     PROP = 18, "Property"
+    PURC = 20, "Purchase"
+    RFTM = 21, "Rate/Term Refinance"
+    COUT = 22, "Cash-Out Refinance"
     OTHR = 100, "Other"
 
 
@@ -60,6 +63,9 @@ class InterestRateTypeChoices(ChoiceEnum):
     MODE = 12, "Modular"
     OTHR = 13, "Other"
     FXRT = 14, "Fixed Rate"
+    VARI = 15, "Variable (ARM)"
+    HYBR = 16, "Hybrid ARM (Fixed-to-Variable)"
+    STEP = 17, "Step Rate"
 
 
 class SeniorityChoices(ChoiceEnum):
@@ -86,7 +92,13 @@ class EmploymentStatusChoices(ChoiceEnum):
     STNT = 6, "Student"
     PNNR = 7, "Pensioner"
     NOEM = 8, "No Employment, Obligor is Legal Entity"
+    RETI = 9, "Retired"
     OTHR = 10, "Other"
+    UNUM = 11, "Unemployed"
+    PATE = 12, "Part-Time Employed"
+    CNTR = 13, "Contract / Freelance"
+    BOWN = 14, "Business Owner"
+    SEAS = 15, "Seasonally Employed"
 
 
 class PrimaryIncomeTypeChoices(ChoiceEnum):
@@ -100,6 +112,15 @@ class PrimaryIncomeTypeChoices(ChoiceEnum):
     DSPL = 8, "Disposable Income"
     CORP = 9, "Borrower is legal entity"
     OTHR = 10, "Other"
+    SALR = 11, "Salary"
+    SEMP = 12, "Self-Employment Income"
+    BUSI = 13, "Business Income"
+    RENT = 14, "Rental Income"
+    INVT = 15, "Investment Income"
+    CNTR = 16, "1099 / Contract Income"
+    PENS = 17, "Pension / Retirement"
+    SOCS = 18, "Social Security / Disability"
+    ROYA = 19, "Royalties"
 
 
 class PrimaryIncomeVerificationChoices(ChoiceEnum):
