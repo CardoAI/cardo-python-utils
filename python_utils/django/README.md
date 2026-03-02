@@ -170,6 +170,17 @@ def my_function():
     transaction.on_commit(do_smth, using=TenantContext.get())
 ```
 
+## Explicit database connection
+
+If using django.db.connection anywhere in the code, you need to change that to get a tenant-aware connection:
+
+```python3
+from python_utils.django.db.utils import get_connection
+from python_utils.django.tenant_context import TenantContext
+
+connection = get_connection(TenantContext.get())
+```
+
 ## Django Shell
 
 This library overrides the shell command of Django, so that it requires the `tenant` arg. 
