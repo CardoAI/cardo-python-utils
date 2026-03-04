@@ -1,7 +1,7 @@
 from functools import reduce
 import json
 import os
-from typing import NotRequired, TypedDict
+from typing import TypedDict
 from django.db import connections
 
 
@@ -10,7 +10,7 @@ class DatabaseConfigData(TypedDict):
     name: str
     user: str
     password: str
-    port: NotRequired[int]
+    port: int | None
 
 
 def get_connection(tenant: str = None):
