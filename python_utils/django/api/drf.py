@@ -1,8 +1,8 @@
 from django.conf import settings
-from jwt.exceptions import InvalidTokenError, PyJWKClientError
+from jwt.exceptions import ExpiredSignatureError, InvalidTokenError, PyJWKClientError
 
 from rest_framework import authentication
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
 from rest_framework.permissions import BasePermission
 
 from .utils import create_or_update_user, decode_jwt
@@ -14,13 +14,15 @@ class AuthenticationBackend(authentication.TokenAuthentication):
     def authenticate_credentials(self, token: str):
         try:
             payload = decode_jwt(token, audience=self._get_audience())
+        except ExpiredSignatureError as e:
+            raise AuthenticationFailed("Token has expired.") from e
         except (InvalidTokenError, PyJWKClientError) as e:
-            raise AuthenticationFailed(f"Invalid token: {str(e)}") from e
+            raise PermissionDenied(f"Invalid token: {str(e)}") from e
 
         try:
             username = payload["preferred_username"]
         except KeyError as e:
-            raise AuthenticationFailed(
+            raise PermissionDenied(
                 "Invalid token: preferred_username not present."
             ) from e
 

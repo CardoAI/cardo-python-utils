@@ -1,12 +1,12 @@
 import logging
 from typing import Literal, Optional, Union
 
-from jwt.exceptions import InvalidTokenError, PyJWKClientError
+from jwt.exceptions import ExpiredSignatureError, InvalidTokenError, PyJWKClientError
 
 from django.conf import settings
 from django.http import HttpRequest
 from ninja.security import HttpBearer
-from ninja.errors import AuthenticationError, HttpError
+from ninja.errors import AuthenticationError, AuthorizationError, HttpError
 
 from .utils import (
     acreate_or_update_user,
@@ -42,7 +42,7 @@ class AuthBearer(HttpBearer):
 
     def _get_token(self, request: HttpRequest) -> Optional[str]:
         """
-        This part of the token validation is similar to what 
+        This part of the token validation is similar to what
         django-ninja is doing in HttpBearer.__call__
         """
         headers = request.headers
@@ -61,16 +61,16 @@ class AuthBearer(HttpBearer):
     def _decode_token(self, token: str) -> TokenPayload:
         try:
             return decode_jwt(token)
+        except ExpiredSignatureError as e:
+            raise AuthenticationError("Token has expired.") from e
         except (InvalidTokenError, PyJWKClientError) as e:
-            raise AuthenticationError(f"Invalid token: {str(e)}") from e
+            raise AuthorizationError(f"Invalid token: {str(e)}") from e
 
     def _get_username(self, payload: TokenPayload) -> str:
         try:
             return payload["preferred_username"]
         except KeyError as e:
-            raise AuthenticationError(
-                "Invalid token: 'preferred_username' claim not present."
-            ) from e
+            raise AuthorizationError("Invalid token: 'preferred_username' claim not present.") from e
 
     def _verify_scopes(self, request, token_payload):
         allowed_scopes = self._get_view_allowed_scopes(request)
@@ -106,9 +106,7 @@ class AuthBearer(HttpBearer):
             if operation.methods and method in operation.methods:
                 return operation.view_func
 
-        raise Exception(
-            f"Could not determine the view function for {request.method} {request.path}."
-        )
+        raise Exception(f"Could not determine the view function for {request.method} {request.path}.")
 
 
 class AuthBearerAsync(AuthBearer):
