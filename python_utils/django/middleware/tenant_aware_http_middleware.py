@@ -10,6 +10,8 @@ from ..tenant_context import TenantContext
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_EXCLUDED_PATHS = ["/", "/healthz", "/healthz/"]
+
 
 class TenantAwareHttpMiddleware:
     """
@@ -72,6 +74,9 @@ class TenantAwareHttpMiddleware:
         """
         Check if the path should be excluded from tenant handling.
         """
+        if path in DEFAULT_EXCLUDED_PATHS:
+            return True
+
         for excluded_path in TENANT_AWARE_EXCLUDED_PATHS:
             if path.startswith(excluded_path):
                 return True
