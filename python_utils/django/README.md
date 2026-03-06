@@ -10,8 +10,6 @@ This package provides utilities for facilitating IDP communication and multi-ten
 - DATABASE_CONFIG
   - A JSON dictionary where each key is the tenant name and the value is a dict with the datase config.
   - If multiple 'DATABASE_CONFIG'-prefixed variables are set, they will be merged into a single dictionary.
-- KEYCLOAK_SERVER_URL
-  - The URL of the Keycloak deployment
 - KEYCLOAK_CONFIDENTIAL_CLIENT_ID
   - The id of the confidential client of the backend service
 - KEYCLOAK_CONFIDENTIAL_CLIENT_SERVICE_ACCOUNT_TOKEN_FILE_PATHS

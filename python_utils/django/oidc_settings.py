@@ -12,7 +12,7 @@ from django.conf import settings
 from .tenant_context import TenantContext
 
 
-KEYCLOAK_SERVER_URL = os.getenv("KEYCLOAK_SERVER_URL", None)
+KEYCLOAK_SERVER_URL_TEMPLATE = os.getenv("KEYCLOAK_SERVER_URL_TEMPLATE", "https://keycloak.{realm}.company.com")
 KEYCLOAK_CONFIDENTIAL_CLIENT_ID = os.getenv("KEYCLOAK_CONFIDENTIAL_CLIENT_ID", None)
 
 OIDC_CLIENT_AUTH_METHOD = getattr(settings, "OIDC_CLIENT_AUTH_METHOD", "client_assertion")
@@ -45,11 +45,17 @@ def get_realm_for_tenant(tenant: str) -> str:
     return TENANT_REALM_MAPPING.get(tenant, tenant)
 
 
+def get_keycloak_server_url() -> str:
+    """Get the Keycloak server URL for the current tenant."""
+
+    return KEYCLOAK_SERVER_URL_TEMPLATE.format(realm=get_realm_for_tenant(TenantContext.get()))
+
+
 def get_oidc_op_base_url() -> str:
     """Get the base URL for the OIDC provider (Keycloak realm URL)."""
 
     realm = get_realm_for_tenant(TenantContext.get())
-    return f"{KEYCLOAK_SERVER_URL}/realms/{realm}"
+    return f"{get_keycloak_server_url()}/realms/{realm}"
 
 
 def get_oidc_op_authorization_endpoint() -> str:

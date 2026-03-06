@@ -6,8 +6,8 @@ from keycloak import KeycloakOpenIDConnection
 from keycloak.exceptions import KeycloakGetError
 
 from ..oidc_settings import (
-    KEYCLOAK_SERVER_URL,
     KEYCLOAK_CONFIDENTIAL_CLIENT_ID,
+    get_keycloak_server_url,
     get_oidc_confidential_client_token,
 )
 from ..tenant_context import TenantContext
@@ -70,7 +70,7 @@ class KeycloakService:
         tenant = TenantContext.get()
 
         keycloak_connection = KeycloakOpenIDConnection(
-            server_url=KEYCLOAK_SERVER_URL,
+            server_url=get_keycloak_server_url(),
             realm_name=tenant,
             user_realm_name=tenant,
             client_id=KEYCLOAK_CONFIDENTIAL_CLIENT_ID,
