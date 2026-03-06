@@ -6,7 +6,7 @@ from jwt.exceptions import ExpiredSignatureError, InvalidTokenError, PyJWKClient
 from django.conf import settings
 from django.http import HttpRequest
 from ninja.security import HttpBearer
-from ninja.errors import AuthenticationError, AuthorizationError, HttpError
+from ninja.errors import AuthenticationError, HttpError
 
 from .utils import (
     acreate_or_update_user,
@@ -64,13 +64,13 @@ class AuthBearer(HttpBearer):
         except ExpiredSignatureError as e:
             raise AuthenticationError("Token has expired.") from e
         except (InvalidTokenError, PyJWKClientError) as e:
-            raise AuthorizationError(f"Invalid token: {str(e)}") from e
+            raise AuthenticationError(f"Invalid token: {str(e)}") from e
 
     def _get_username(self, payload: TokenPayload) -> str:
         try:
             return payload["preferred_username"]
         except KeyError as e:
-            raise AuthorizationError("Invalid token: 'preferred_username' claim not present.") from e
+            raise AuthenticationError("Invalid token: 'preferred_username' claim not present.") from e
 
     def _verify_scopes(self, request, token_payload):
         allowed_scopes = self._get_view_allowed_scopes(request)
