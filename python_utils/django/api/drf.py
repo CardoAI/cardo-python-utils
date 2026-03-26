@@ -1,5 +1,5 @@
 from django.conf import settings
-from jwt.exceptions import ExpiredSignatureError, InvalidTokenError, PyJWKClientError
+from jwt.exceptions import ExpiredSignatureError, PyJWTError
 
 from rest_framework import authentication
 from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
@@ -16,19 +16,17 @@ class AuthenticationBackend(authentication.TokenAuthentication):
             payload = decode_jwt(token, audience=self._get_audience())
         except ExpiredSignatureError as e:
             raise AuthenticationFailed("Token has expired.") from e
-        except (InvalidTokenError, PyJWKClientError) as e:
+        except PyJWTError as e:
             raise PermissionDenied(f"Invalid token: {str(e)}") from e
 
         try:
             username = payload["preferred_username"]
         except KeyError as e:
-            raise PermissionDenied(
-                "Invalid token: preferred_username not present."
-            ) from e
+            raise PermissionDenied("Invalid token: preferred_username not present.") from e
 
         user = create_or_update_user(username, payload)
         return user, payload
-    
+
     def _get_audience(self):
         """
         Allows subclasses to override the audience used for JWT decoding.
@@ -50,9 +48,9 @@ class HasScope(BasePermission):
         allowed_scopes = ["jobs"]
         ...
 
-    It is possible to define different scopes per HTTP method 
+    It is possible to define different scopes per HTTP method
     by setting `allowed_scopes` as a dict:
-    
+
     class MyApiView(APIView):
         permission_classes = [IsAuthenticated, HasScope]
         allowed_scopes = {
@@ -73,7 +71,7 @@ class HasScope(BasePermission):
                 f"No allowed_scopes defined on the view '{view.__class__.__name__}'. "
                 "Define allowed_scopes or set it to '*' to allow any scope."
             )
-        
+
         if isinstance(allowed_scopes, dict):
             allowed_scopes = allowed_scopes.get(request.method.lower(), [])
 

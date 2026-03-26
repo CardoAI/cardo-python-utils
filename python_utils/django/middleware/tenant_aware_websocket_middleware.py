@@ -3,6 +3,7 @@ from urllib.parse import parse_qs
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from jwt.exceptions import PyJWTError
 
 from ..api.utils import decode_jwt, TokenPayload
 from ..settings import DEVELOPMENT_TENANT
@@ -50,7 +51,13 @@ class TenantAwareWebsocketMiddleware:
         tenant = self._get_tenant(scope)
 
         async with TenantContext(tenant):
-            token_payload: TokenPayload = decode_jwt(access_token)
+            try:
+                token_payload: TokenPayload = decode_jwt(access_token)
+            except PyJWTError as e:
+                logger.info(f"Failed to decode JWT token: {e}")
+                await self._reject_connection(send, f"Invalid authorization token: {str(e)}")
+                return
+
             username = token_payload.get("preferred_username")
             if not username:
                 await self._reject_connection(send, "Username cannot be extracted from the token")
@@ -84,9 +91,7 @@ class TenantAwareWebsocketMiddleware:
         Returns:
             None
         """
-        await send(
-            {"type": "websocket.close", "code": 4000, "reason": reason}
-        )  # Custom close code for rejection
+        await send({"type": "websocket.close", "code": 4000, "reason": reason})  # Custom close code for rejection
 
     def _get_tenant(self, scope) -> str:
         """
@@ -110,9 +115,7 @@ class TenantAwareWebsocketMiddleware:
             logger.debug(f"Tenant '{tenant}' extracted from websocket host: {host}")
             return tenant
 
-        raise Exception(
-            f"Could not determine tenant from websocket subdomain. Host: {host}"
-        )
+        raise Exception(f"Could not determine tenant from websocket subdomain. Host: {host}")
 
     @staticmethod
     def _get_host_from_scope(scope) -> str:
