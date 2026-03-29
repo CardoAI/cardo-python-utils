@@ -27,6 +27,7 @@ class TenantAwareCommand(BaseCommand):
         the command for all tenants.
         """
         parser.add_argument(
+            "-t",
             "--tenant",
             action="store",
             dest="tenant",

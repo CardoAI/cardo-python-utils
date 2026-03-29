@@ -11,6 +11,7 @@ class Command(ShowMigrationsCommand):
         super().add_arguments(parser)
 
         parser.add_argument(
+            "-t",
             "--tenant",
             action="store",
             dest="tenant",
