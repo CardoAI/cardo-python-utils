@@ -11,6 +11,9 @@ logger = logging.getLogger(__name__)
 _tenant_var: ContextVar[Optional[str]] = ContextVar("tenant", default=None)
 
 
+ALLOW_TENANT_CONTEXT_CHANGE = getattr(settings, "ALLOW_TENANT_CONTEXT_CHANGE", False)
+
+
 class TenantContext(ContextDecorator):
     """
     Context manager that sets the current tenant.
@@ -68,14 +71,14 @@ class TenantContext(ContextDecorator):
     def set(tenant):
         if TenantContext.is_set():
             # If the tenant is already set, we do not allow to set it
-            # again unless it is the same value.
+            # again unless it is the same value or ALLOW_TENANT_CONTEXT_CHANGE is True.
             # This is to prevent the tenant to be set to a different
             # value in the same thread.
             # A request-response cycle is required to set the tenant
             # only once and operate on the same tenant in its lifecycle.
             # The same applies to a single task, it is not allowed to set the
             # tenant in the same task to a different value.
-            if TenantContext.get() != tenant:
+            if TenantContext.get() != tenant and not ALLOW_TENANT_CONTEXT_CHANGE:
                 raise RuntimeError(
                     f"Tenant context already set to '{TenantContext.get()}', "
                     f"cannot change to '{tenant}' within the same request/task lifecycle."

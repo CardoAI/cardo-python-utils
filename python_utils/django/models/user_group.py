@@ -20,3 +20,4 @@ class UserGroupBase(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ["path"]

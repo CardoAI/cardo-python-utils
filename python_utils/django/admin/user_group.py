@@ -70,9 +70,9 @@ class UserGroupAdminBase(admin.ModelAdmin, metaclass=UserGroupAdminMetaclass):
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
 
-        for entity in self.app_entities:
-            count_attr = f"allowed_{entity}_count"
-            queryset = queryset.annotate(**{count_attr: Count(f"allowed_{entity}")})
+        queryset = queryset.annotate(**{
+            f"allowed_{entity}_count": Count(f"allowed_{entity}") for entity in self.app_entities
+        })
 
         return queryset
 
