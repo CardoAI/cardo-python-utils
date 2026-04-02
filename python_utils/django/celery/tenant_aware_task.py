@@ -47,8 +47,7 @@ class TenantAwareTask(TaskClass):
             kwargs = {}
 
         if TENANT_KEY not in kwargs:
-            tenant = TenantContext.get()
-            kwargs[TENANT_KEY] = tenant
+            kwargs[TENANT_KEY] = TenantContext.get()
 
         return super().apply(
             args, kwargs, link, link_error, task_id, retries, throw, logfile, loglevel, headers, **options
@@ -63,10 +62,21 @@ class TenantAwareTask(TaskClass):
             kwargs = {}
 
         if TENANT_KEY not in kwargs:
-            tenant = TenantContext.get()
-            kwargs[TENANT_KEY] = tenant
+            kwargs[TENANT_KEY] = TenantContext.get()
 
         return super().apply_async(args, kwargs, task_id, producer, link, link_error, shadow, **options)
+
+    def s(self, *args, **kwargs):
+        if TENANT_KEY not in kwargs:
+            kwargs[TENANT_KEY] = TenantContext.get()
+
+        return self.signature(args, kwargs)
+
+    def si(self, *args, **kwargs):
+        if TENANT_KEY not in kwargs:
+            kwargs[TENANT_KEY] = TenantContext.get()
+
+        return self.signature(args, kwargs, immutable=True)
 
     def __call__(self, *args, **kwargs):
         """Use the tenant name from the kwargs to update the context."""
