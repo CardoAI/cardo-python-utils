@@ -12,7 +12,7 @@ from django.conf import settings
 from .tenant_context import TenantContext
 
 
-KEYCLOAK_SERVER_URL_TEMPLATE = os.getenv("KEYCLOAK_SERVER_URL_TEMPLATE", "https://keycloak.{realm}.company.com")
+KEYCLOAK_SERVER_URL_TEMPLATE = os.getenv("KEYCLOAK_SERVER_URL_TEMPLATE", "https://id.{realm}.company.com")
 KEYCLOAK_CONFIDENTIAL_CLIENT_ID = os.getenv("KEYCLOAK_CONFIDENTIAL_CLIENT_ID", None)
 
 OIDC_CLIENT_AUTH_METHOD = getattr(settings, "OIDC_CLIENT_AUTH_METHOD", "client_assertion")

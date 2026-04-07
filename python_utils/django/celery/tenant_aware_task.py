@@ -15,6 +15,8 @@ except ImportError:
     TaskClass = Task
     USE_QUEUE_ONCE = False
 
+CELERY_BACKEND_CLEANUP_TASK = "celery.backend_cleanup"
+
 
 class TenantAwareTask(TaskClass):
     #: Enable argument checking.
@@ -46,7 +48,7 @@ class TenantAwareTask(TaskClass):
         if kwargs is None:
             kwargs = {}
 
-        if TENANT_KEY not in kwargs:
+        if TENANT_KEY not in kwargs and self.name != CELERY_BACKEND_CLEANUP_TASK:
             kwargs[TENANT_KEY] = TenantContext.get()
 
         return super().apply(
@@ -61,19 +63,19 @@ class TenantAwareTask(TaskClass):
         if kwargs is None:
             kwargs = {}
 
-        if TENANT_KEY not in kwargs:
+        if TENANT_KEY not in kwargs and self.name != CELERY_BACKEND_CLEANUP_TASK:
             kwargs[TENANT_KEY] = TenantContext.get()
 
         return super().apply_async(args, kwargs, task_id, producer, link, link_error, shadow, **options)
 
     def s(self, *args, **kwargs):
-        if TENANT_KEY not in kwargs:
+        if TENANT_KEY not in kwargs and self.name != CELERY_BACKEND_CLEANUP_TASK:
             kwargs[TENANT_KEY] = TenantContext.get()
 
         return self.signature(args, kwargs)
 
     def si(self, *args, **kwargs):
-        if TENANT_KEY not in kwargs:
+        if TENANT_KEY not in kwargs and self.name != CELERY_BACKEND_CLEANUP_TASK:
             kwargs[TENANT_KEY] = TenantContext.get()
 
         return self.signature(args, kwargs, immutable=True)
@@ -87,8 +89,14 @@ class TenantAwareTask(TaskClass):
             key = self.get_key(args, kwargs)
             self.once_backend.clear_lock(key)
 
-        if self.name != "celery.backend_cleanup":
-            tenant = kwargs.pop(TENANT_KEY)
+        if self.name != CELERY_BACKEND_CLEANUP_TASK:
+            try:
+                tenant = kwargs.pop(TENANT_KEY)
+            except KeyError:
+                raise RuntimeError(
+                    f"TenantAwareTask {self.name} called without tenant in kwargs. "
+                    f"Make sure to call the task with the tenant in the kwargs or use the apply/apply_async/s/si methods."
+                )
             TenantContext.set(tenant)
 
         return self.run(*args, **kwargs)
