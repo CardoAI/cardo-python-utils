@@ -60,6 +60,14 @@ class TenantAwareS3Storage(S3Boto3Storage):
     def __init__(self, *args, **kwargs):
         # Don't set bucket_name here; it will be resolved dynamically
         super().__init__(*args, **kwargs)
+        self._buckets = {}
+
+    @property
+    def bucket(self):
+        bucket_name = self.bucket_name  # resolves current tenant
+        if bucket_name not in self._buckets:
+            self._buckets[bucket_name] = self.connection.Bucket(bucket_name)
+        return self._buckets[bucket_name]
 
     @property
     def bucket_name(self):
@@ -74,6 +82,17 @@ class TenantAwareS3Storage(S3Boto3Storage):
     def bucket_name(self, value):
         # Allow setting bucket_name but it will be overridden by the property getter
         self._bucket_name_override = value
+
+    def __getstate__(self):
+        """Override __getstate__ to exclude the _buckets cache from being pickled."""
+        state = super().__getstate__()
+        state.pop("_buckets", None)
+        return state
+
+    def __setstate__(self, state):
+        """Override __setstate__ to reinitialize the _buckets cache after unpickling."""
+        super().__setstate__(state)
+        self._buckets = {}
 
 
 class TenantAwarePrivateS3Storage(TenantAwareS3Storage):
