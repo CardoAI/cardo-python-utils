@@ -6,6 +6,7 @@ dynamically based on the tenant.
 
 import json
 import os
+import time
 import requests
 
 from django.conf import settings
@@ -125,10 +126,17 @@ def get_oidc_confidential_client_token(**kwargs) -> dict:
         data["client_assertion_type"] = KEYCLOAK_CLIENT_ASSERTION_TYPE
         data["client_assertion"] = get_confidential_client_service_account_token()
 
-    response = requests.post(
-        get_oidc_op_token_endpoint(),
-        data=data,
-    )
+    max_retries = 3
+    for attempt in range(max_retries + 1):
+        response = requests.post(
+            get_oidc_op_token_endpoint(),
+            data=data,
+        )
+        # Retry on server errors (5xx), it might be a temporary issue with Keycloak.
+        if response.status_code < 500 or attempt == max_retries:
+            break
+        time.sleep(2**attempt)  # 1, 2, 4 seconds
+
     response.raise_for_status()
 
     return response.json()
