@@ -40,9 +40,7 @@ class AdminAuthenticationBackend(OIDCAuthenticationBackend):
         return get_oidc_confidential_client_token(**payload)
 
     def _get_user_data(self, claims) -> dict:
-        client_roles = (
-            claims.get("resource_access", {}).get(getattr(settings, "OIDC_RP_CLIENT_ID", ""), {}).get("roles", [])
-        )
+        client_roles = claims.get("client_roles", [])
         is_superuser = "AdminPanel" in client_roles
 
         return {
